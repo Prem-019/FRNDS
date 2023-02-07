@@ -1,0 +1,31 @@
+import express from 'express'
+import { protect, adminCheck } from '../middleware/authMiddleware.js'
+import {
+  authUser,
+  getUserProfile,
+  updateUserProfile,
+  registerUser,
+  getAllUsers,
+  deleteUser,
+  getUserById,
+  updateUser,
+} from '../controller/userController.js'
+
+const router = express.Router()
+
+router
+  .route('/')
+  .post(protect, adminCheck, registerUser)
+  .get(protect, adminCheck, getAllUsers)
+router.post('/login', authUser)
+router
+  .route('/profile')
+  .get(protect, getUserProfile)
+  .put(protect, updateUserProfile)
+router
+  .route('/:id')
+  .get(protect, adminCheck, getUserById)
+  .delete(protect, adminCheck, deleteUser)
+  .put(protect, adminCheck, updateUser)
+
+export default router
