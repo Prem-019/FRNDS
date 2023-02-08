@@ -24,16 +24,19 @@ const userSchema = mongoose.Schema(
     },
     score: {
       type: Number,
+      required: true,
       default: 0,
     },
     category: {
       type: String,
-      default: null,
+      required: true,
+      default: 'null',
     },
     userType: {
       type: String,
       required: true,
       enum: ['Admin', 'User', 'Doctor', 'Association'],
+      default: 'User',
     },
   },
   {

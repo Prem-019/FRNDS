@@ -16,9 +16,9 @@ const authUser = asyncHandler(async (req, res) => {
         _id: user._id,
         name: user.name,
         email: user.email,
-        isMainAdmin: user.isMainAdmin,
-        isAccessAllowed: user.isAccessAllowed,
         img: user.img,
+        category: user.category,
+        score: user.score,
         token: generateToken(user._id),
       })
     } else {
@@ -35,7 +35,7 @@ const authUser = asyncHandler(async (req, res) => {
 // @Route  POST /api/users
 // @access Public
 const registerUser = asyncHandler(async (req, res) => {
-  const { name, email, password, img, isAccessAllowed } = req.body
+  const { name, email, password, category } = req.body
   const userExists = await User.findOne({ email })
 
   if (userExists) {
@@ -47,8 +47,6 @@ const registerUser = asyncHandler(async (req, res) => {
     name,
     email,
     password,
-    img,
-    isAccessAllowed,
   })
 
   if (user) {
@@ -57,8 +55,8 @@ const registerUser = asyncHandler(async (req, res) => {
       name: user.name,
       email: user.email,
       img: user.img,
-      isMainAdmin: user.isMainAdmin,
-      isAccessAllowed: user.isAccessAllowed,
+      category: user.category,
+      score: user.score,
       token: generateToken(user._id),
     })
   } else {
@@ -78,8 +76,10 @@ const getUserProfile = asyncHandler(async (req, res) => {
       _id: user._id,
       name: user.name,
       email: user.email,
-      isAdmin: user.isAdmin,
-      isAccessAllowed: user.isAccessAllowed,
+      img: user.img,
+      category: user.category,
+      score: user.score,
+      token: generateToken(user._id),
     })
   } else {
     res.status(404)
