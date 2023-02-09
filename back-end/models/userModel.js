@@ -38,6 +38,11 @@ const userSchema = mongoose.Schema(
       enum: ['Admin', 'User', 'Doctor', 'Association'],
       default: 'User',
     },
+    isAdmin: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
   },
   {
     timestamps: true,
