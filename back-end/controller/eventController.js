@@ -77,10 +77,13 @@ const getAllEvents = asyncHandler(async (req, res) => {
   res.json(events)
 })
 
-// work in progress
+// @desc   Get My events
+// @Route  GET /api/events/my
+// @access PRIVATE auth
+const getMyEvents = asyncHandler(async (req, res) => {
+  const events = await Event.find({ registeredUsers: { $in: [req.user._id] } })
 
-// const getMyEvents = asyncHandler(async (req, res) => {
-//   const events = await Event.find({ registerUsers: req.user._id })
-// })
+  res.json(events)
+})
 
-export { createEvent, registerEvent, getAllEvents }
+export { createEvent, registerEvent, getAllEvents, getMyEvents }
