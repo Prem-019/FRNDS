@@ -44,6 +44,11 @@ const registerEvent = asyncHandler(async (req, res) => {
   const selectedEvent = await Event.findById(req.params.id)
 
   if (selectedEvent) {
+    if (!selectedEvent.isOpen) {
+      res.status(400)
+      throw new Error('Registration is closed!')
+    }
+
     if (selectedEvent.registeredUsers.length === selectedEvent.limit) {
       res.status(400)
       throw new Error('Event is fully booked out!')
@@ -70,6 +75,49 @@ const registerEvent = asyncHandler(async (req, res) => {
 })
 
 // @desc   Get all events
+// @Route  GET /api/events/:id
+// @access PRIVATE Admin
+const updateEvent = asyncHandler(async (req, res) => {
+  const event = await Event.findById(req.params.id)
+
+  if (event) {
+    event.name = req.body.name || event.name
+    event.city = req.body.city || event.city
+    event.venue = req.body.venue || event.venue
+    event.date = req.body.date || event.date
+    event.createdBy = req.body.createdBy || event.createdBy
+    event.registeredUsers = req.body.registeredUsers || event.registeredUsers
+    event.minimumScore = req.body.minimumScore || event.minimumScore
+    event.limit = req.body.limit || event.limit
+    event.reward = req.body.reward || event.reward
+    event.isOpen = req.body.isOpen || event.isOpen
+
+    await event.save()
+    res.status(200)
+    res.json(event)
+  } else {
+    res.status(404)
+    throw new Error('Event not found!')
+  }
+})
+
+// @desc   Get all events
+// @Route  GET /api/events/
+// @access PRIVATE auth
+const deleteEvent = asyncHandler(async (req, res) => {
+  const event = await Event.findById(req.params.id)
+
+  if (event) {
+    await event.remove()
+
+    res.json({ message: 'Event Deleted Successfully!' })
+  } else {
+    res.status(404)
+    throw new Error()
+  }
+})
+
+// @desc   Get all events
 // @Route  GET /api/events/
 // @access PRIVATE auth
 const getAllEvents = asyncHandler(async (req, res) => {
@@ -86,4 +134,11 @@ const getMyEvents = asyncHandler(async (req, res) => {
   res.json(events)
 })
 
-export { createEvent, registerEvent, getAllEvents, getMyEvents }
+export {
+  createEvent,
+  registerEvent,
+  getAllEvents,
+  getMyEvents,
+  updateEvent,
+  deleteEvent,
+}
