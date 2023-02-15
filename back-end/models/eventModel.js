@@ -34,6 +34,16 @@ const eventSchema = mongoose.Schema(
       required: true,
       default: 10,
     },
+    isOpen: {
+      type: Boolean,
+      default: true,
+      required: true,
+    },
+    reward: {
+      type: Number,
+      default: 0,
+      required: true,
+    },
     registeredUsers: [
       {
         type: mongoose.Schema.Types.ObjectId,
