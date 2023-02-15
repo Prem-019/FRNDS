@@ -97,6 +97,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     user.img = req.body.img || user.img
     user.name = req.body.name || user.name
     user.email = req.body.email || user.email
+    user.category = req.body.category || user.category
     if (req.body.password) {
       user.password = req.body.password
     }
@@ -108,8 +109,9 @@ const updateUserProfile = asyncHandler(async (req, res) => {
       img: updatedUser.img,
       name: updatedUser.name,
       email: updatedUser.email,
+      category: updatedUser.category,
+      userType: updatedUser.userType,
       isAdmin: updatedUser.isAdmin,
-      isAccessAllowed: updatedUser.isAccessAllowed,
     })
   } else {
     res.status(404)
@@ -164,8 +166,7 @@ const updateUser = asyncHandler(async (req, res) => {
     user.img = req.body.img || user.img
     user.name = req.body.name || user.name
     user.email = req.body.email || user.email
-    user.isMainAdmin = req.body.isMainAdmin || user.isMainAdmin
-    user.isAccessAllowed = req.body.isAccessAllowed
+    user.isAdmin = req.body.isAdmin || user.isAdmin
 
     const updatedUser = await user.save()
 
@@ -175,7 +176,6 @@ const updateUser = asyncHandler(async (req, res) => {
       name: updatedUser.name,
       email: updatedUser.email,
       isAdmin: updatedUser.isAdmin,
-      isAccessAllowed: updatedUser.isAccessAllowed,
     })
   } else {
     res.status(404)
