@@ -54,6 +54,15 @@ const registerEvent = asyncHandler(async (req, res) => {
       throw new Error('Event is fully booked out!')
     }
 
+    if (
+      req.user.personality === null ||
+      req.user.anxiety === 0 ||
+      req.user.emotion === 0
+    ) {
+      res.status(400)
+      throw new Error('Incomplete profile for registration')
+    }
+
     if (req.user.score < selectedEvent.minimumScore) {
       res.status(400)
       throw new Error('Your score does not meet the minimum criteria!')

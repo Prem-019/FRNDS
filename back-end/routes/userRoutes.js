@@ -9,6 +9,7 @@ import {
   deleteUser,
   getUserById,
   updateUser,
+  completeProfile,
 } from '../controller/userController.js'
 
 const router = express.Router()
@@ -20,6 +21,7 @@ router
   .route('/profile')
   .get(protect, getUserProfile)
   .put(protect, updateUserProfile)
+router.route('/profile/complete').post(protect, completeProfile)
 router
   .route('/:id')
   .get(protect, adminCheck, getUserById)

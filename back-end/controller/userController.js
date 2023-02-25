@@ -14,11 +14,16 @@ const authUser = asyncHandler(async (req, res) => {
     if (await user.matchPassword(password)) {
       res.json({
         _id: user._id,
+        img: user.img,
         name: user.name,
         email: user.email,
-        img: user.img,
         category: user.category,
+        userType: user.userType,
+        personality: user.personality,
+        anxiety: user.anxiety,
+        emotion: user.emotion,
         score: user.score,
+        isAdmin: user.isAdmin,
         token: generateToken(user._id),
       })
     } else {
@@ -52,11 +57,16 @@ const registerUser = asyncHandler(async (req, res) => {
   if (user) {
     res.status(201).json({
       _id: user._id,
+      img: user.img,
       name: user.name,
       email: user.email,
-      img: user.img,
       category: user.category,
+      userType: user.userType,
+      personality: user.personality,
+      anxiety: user.anxiety,
+      emotion: user.emotion,
       score: user.score,
+      isAdmin: user.isAdmin,
       token: generateToken(user._id),
     })
   } else {
@@ -74,16 +84,52 @@ const getUserProfile = asyncHandler(async (req, res) => {
   if (user) {
     res.json({
       _id: user._id,
+      img: user.img,
       name: user.name,
       email: user.email,
-      img: user.img,
       category: user.category,
+      userType: user.userType,
+      personality: user.personality,
+      anxiety: user.anxiety,
+      emotion: user.emotion,
       score: user.score,
-      token: generateToken(user._id),
+      isAdmin: user.isAdmin,
     })
   } else {
     res.status(404)
     throw new Error('User Not Found')
+  }
+})
+
+// @desc   Update USER PROFILE
+// @Route  POST /api/users/profile/complete
+// @access PRIVATE
+const completeProfile = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id)
+
+  if (user) {
+    user.personality = req.body.personality || user.personality
+    user.anxiety = req.body.anxiety || user.anxiety
+    user.emotion = req.body.emotion || user.emotion
+
+    const updatedUser = await user.save()
+
+    res.status(201).json({
+      _id: updatedUser._id,
+      img: updatedUser.img,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      category: updatedUser.category,
+      userType: updatedUser.userType,
+      personality: updatedUser.personality,
+      anxiety: updatedUser.anxiety,
+      emotion: updatedUser.emotion,
+      score: updatedUser.score,
+      isAdmin: updatedUser.isAdmin,
+    })
+  } else {
+    res.status(404)
+    throw new Error('User not found!')
   }
 })
 
@@ -111,6 +157,10 @@ const updateUserProfile = asyncHandler(async (req, res) => {
       email: updatedUser.email,
       category: updatedUser.category,
       userType: updatedUser.userType,
+      personality: updatedUser.personality,
+      anxiety: updatedUser.anxiety,
+      emotion: updatedUser.emotion,
+      score: updatedUser.score,
       isAdmin: updatedUser.isAdmin,
     })
   } else {
@@ -173,8 +223,15 @@ const updateUser = asyncHandler(async (req, res) => {
     res.status(201)
     res.json({
       id: updatedUser._id,
+      img: updatedUser.img,
       name: updatedUser.name,
       email: updatedUser.email,
+      category: updatedUser.category,
+      userType: updatedUser.userType,
+      personality: updatedUser.personality,
+      anxiety: updatedUser.anxiety,
+      emotion: updatedUser.emotion,
+      score: updatedUser.score,
       isAdmin: updatedUser.isAdmin,
     })
   } else {
@@ -192,4 +249,5 @@ export {
   deleteUser,
   getUserById,
   updateUser,
+  completeProfile,
 }

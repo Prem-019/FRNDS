@@ -38,6 +38,19 @@ const userSchema = mongoose.Schema(
       enum: ['Admin', 'User', 'Doctor', 'Association'],
       default: 'User',
     },
+    personality: {
+      type: String,
+      enum: ['Introvert', 'Extrovert', 'Ambivert'],
+      default: 'null',
+    },
+    anxiety: {
+      type: Number,
+      default: 0,
+    },
+    emotion: {
+      type: Number,
+      default: 0,
+    },
     isAdmin: {
       type: Boolean,
       required: true,
