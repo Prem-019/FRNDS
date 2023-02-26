@@ -40,8 +40,8 @@ const userSchema = mongoose.Schema(
     },
     personality: {
       type: String,
-      enum: ['Introvert', 'Extrovert', 'Ambivert'],
-      default: 'null',
+      enum: ['Introvert', 'Extrovert', 'Ambivert', null],
+      default: null,
     },
     anxiety: {
       type: Number,
