@@ -22,6 +22,14 @@ const userSchema = mongoose.Schema(
       default:
         'https://cdn.pixabay.com/photo/2016/08/31/11/54/icon-1633249_960_720.png',
     },
+    country: {
+      type: String,
+      required: true,
+    },
+    age: {
+      type: Number,
+      required: true,
+    },
     score: {
       type: Number,
       required: true,

@@ -18,6 +18,8 @@ const authUser = asyncHandler(async (req, res) => {
         name: user.name,
         email: user.email,
         gender: user.gender,
+        country: user.country,
+        age: user.age,
         category: user.category,
         userType: user.userType,
         personality: user.personality,
@@ -62,6 +64,8 @@ const registerUser = asyncHandler(async (req, res) => {
       name: user.name,
       email: user.email,
       gender: user.gender,
+      country: user.country,
+      age: user.age,
       category: user.category,
       userType: user.userType,
       personality: user.personality,
@@ -90,6 +94,8 @@ const getUserProfile = asyncHandler(async (req, res) => {
       name: user.name,
       email: user.email,
       gender: user.gender,
+      country: user.country,
+      age: user.age,
       category: user.category,
       userType: user.userType,
       personality: user.personality,
@@ -123,6 +129,8 @@ const completeProfile = asyncHandler(async (req, res) => {
       name: updatedUser.name,
       email: updatedUser.email,
       gender: updatedUser.gender,
+      country: user.country,
+      age: user.age,
       category: updatedUser.category,
       userType: updatedUser.userType,
       personality: updatedUser.personality,
@@ -148,6 +156,9 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     user.name = req.body.name || user.name
     user.email = req.body.email || user.email
     user.category = req.body.category || user.category
+    user.gender = req.body.gender || user.gender
+    user.country = req.body.country || user.gender
+    user.age = req.body.age || user.gender
     if (req.body.password) {
       user.password = req.body.password
     }
@@ -160,6 +171,8 @@ const updateUserProfile = asyncHandler(async (req, res) => {
       name: updatedUser.name,
       email: updatedUser.email,
       gender: updatedUser.gender,
+      country: user.country,
+      age: user.age,
       category: updatedUser.category,
       userType: updatedUser.userType,
       personality: updatedUser.personality,
@@ -221,6 +234,9 @@ const updateUser = asyncHandler(async (req, res) => {
     user.img = req.body.img || user.img
     user.name = req.body.name || user.name
     user.email = req.body.email || user.email
+    user.gender = req.body.gender || user.gender
+    user.country = req.body.country || user.gender
+    user.age = req.body.age || user.gender
     user.isAdmin = req.body.isAdmin || user.isAdmin
 
     const updatedUser = await user.save()
