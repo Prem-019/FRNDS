@@ -8,6 +8,7 @@ const createEvent = asyncHandler(async (req, res) => {
   const {
     name,
     city,
+    details,
     venue,
     date,
     createdBy,
@@ -26,6 +27,7 @@ const createEvent = asyncHandler(async (req, res) => {
     name,
     city,
     venue,
+    details,
     date,
     createdBy,
     registeredUsers,
@@ -93,6 +95,7 @@ const updateEvent = asyncHandler(async (req, res) => {
     event.name = req.body.name || event.name
     event.city = req.body.city || event.city
     event.venue = req.body.venue || event.venue
+    event.details = req.body.details || event.details
     event.date = req.body.date || event.date
     event.createdBy = req.body.createdBy || event.createdBy
     event.registeredUsers = req.body.registeredUsers || event.registeredUsers
