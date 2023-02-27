@@ -24,15 +24,12 @@ const userSchema = mongoose.Schema(
     },
     country: {
       type: String,
-      required: true,
     },
     phone: {
       type: Number,
-      required: true,
     },
     age: {
       type: Number,
-      required: true,
     },
     score: {
       type: Number,
