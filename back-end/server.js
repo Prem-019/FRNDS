@@ -8,6 +8,8 @@ import eventRoutes from './routes/eventRoutes.js'
 
 // Custom error handling
 import { notFound, errorHandler } from './middleware/errorMiddleware.js'
+import cors from "cors"
+
 
 dotenv.config()
 
@@ -16,6 +18,7 @@ connectDB()
 const app = express()
 
 app.use(express.json())
+app.use(cors()) 
 
 app.get('/', (req, res) => {
   res.json('API is up and running...')
@@ -29,6 +32,7 @@ app.use('/api/events', eventRoutes)
 
 // Custom middleware with ERROR handler
 app.use(errorHandler)
+
 
 app.listen(
   process.env.PORT,
