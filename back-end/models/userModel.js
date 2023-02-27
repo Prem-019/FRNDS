@@ -44,6 +44,7 @@ const userSchema = mongoose.Schema(
       required: true,
       default: 'null',
     },
+    interests: [{ type: String }],
     gender: {
       type: String,
       enum: ['Male', 'Female', 'Other'],

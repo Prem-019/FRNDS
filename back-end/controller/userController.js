@@ -20,6 +20,7 @@ const authUser = asyncHandler(async (req, res) => {
         gender: user.gender,
         country: user.country,
         age: user.age,
+        interests: user.interests,
         phone: user.phone,
         category: user.category,
         userType: user.userType,
@@ -67,6 +68,7 @@ const registerUser = asyncHandler(async (req, res) => {
       gender: user.gender,
       country: user.country,
       age: user.age,
+      interests: user.interests,
       phone: user.phone,
       category: user.category,
       userType: user.userType,
@@ -98,6 +100,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
       gender: user.gender,
       country: user.country,
       age: user.age,
+      interests: user.interests,
       phone: user.phone,
       category: user.category,
       userType: user.userType,
@@ -134,6 +137,7 @@ const completeProfile = asyncHandler(async (req, res) => {
       gender: updatedUser.gender,
       country: user.country,
       age: user.age,
+      interests: user.interests,
       phone: user.phone,
       category: updatedUser.category,
       userType: updatedUser.userType,
@@ -163,6 +167,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     user.gender = req.body.gender || user.gender
     user.country = req.body.country || user.country
     user.phone = req.body.phone || user.phone
+    user.interests = req.body.interests || user.interests
     user.age = req.body.age || user.gender
     if (req.body.password) {
       user.password = req.body.password
@@ -177,6 +182,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
       email: updatedUser.email,
       gender: updatedUser.gender,
       country: user.country,
+      interests: user.interests,
       phone: user.phone,
       age: user.age,
       category: updatedUser.category,
@@ -241,6 +247,7 @@ const updateUser = asyncHandler(async (req, res) => {
     user.name = req.body.name || user.name
     user.email = req.body.email || user.email
     user.gender = req.body.gender || user.gender
+    user.interests = req.body.interests || user.interests
     user.country = req.body.country || user.country
     user.phone = req.body.phone || user.phone
     user.age = req.body.age || user.gender
@@ -255,6 +262,7 @@ const updateUser = asyncHandler(async (req, res) => {
       name: updatedUser.name,
       email: updatedUser.email,
       gender: updatedUser.gender,
+      interests: updatedUser.interests,
       phone: updatedUser.phone,
       category: updatedUser.category,
       userType: updatedUser.userType,
