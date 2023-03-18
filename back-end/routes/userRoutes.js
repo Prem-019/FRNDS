@@ -10,6 +10,7 @@ import {
   getUserById,
   updateUser,
   completeProfile,
+  giveScore,
 } from '../controller/userController.js'
 
 const router = express.Router()
@@ -22,6 +23,7 @@ router
   .get(protect, getUserProfile)
   .put(protect, updateUserProfile)
 router.route('/profile/complete').post(protect, completeProfile)
+router.route('/score/:id').post(protect, adminCheck, giveScore)
 router
   .route('/:id')
   .get(protect, adminCheck, getUserById)
