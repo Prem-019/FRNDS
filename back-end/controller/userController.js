@@ -165,6 +165,9 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     user.phone = req.body.phone || user.phone
     user.interests = req.body.interests || user.interests
     user.age = req.body.age || user.gender
+    user.personality = req.body.personality || user.personality
+    user.anxiety = req.body.anxiety || user.anxiety
+    user.emotion = req.body.emotion || user.emotion
     if (req.body.password) {
       user.password = req.body.password
     }
