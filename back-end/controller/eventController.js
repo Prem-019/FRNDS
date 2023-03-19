@@ -148,7 +148,9 @@ const getAllEvents = asyncHandler(async (req, res) => {
 // @Route  GET /api/events/my
 // @access PRIVATE auth
 const getMyEvents = asyncHandler(async (req, res) => {
-  const events = await Event.find({ registeredUsers: { $in: [req.user._id] } })
+  const events = await Event.find({
+    registeredUsers: { $in: [req.user._id] },
+  }).populate('registeredUsers', 'name email')
 
   res.json(events)
 })
