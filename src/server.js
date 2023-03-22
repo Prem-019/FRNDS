@@ -1,6 +1,7 @@
 import express from 'express'
 import dotenv from 'dotenv'
 import connectDB from './config/db.js'
+import serverless from 'serverless-http'
 
 // ROUTING
 import userRoutes from './routes/userRoutes.js'
@@ -8,8 +9,7 @@ import eventRoutes from './routes/eventRoutes.js'
 
 // Custom error handling
 import { notFound, errorHandler } from './middleware/errorMiddleware.js'
-import cors from "cors"
-
+import cors from 'cors'
 
 dotenv.config()
 
@@ -17,8 +17,8 @@ connectDB()
 
 const app = express()
 
+app.use(cors())
 app.use(express.json())
-app.use(cors()) 
 
 app.get('/', (req, res) => {
   res.json('API is up and running...')
@@ -33,7 +33,6 @@ app.use('/api/events', eventRoutes)
 // Custom middleware with ERROR handler
 app.use(errorHandler)
 
-
 app.listen(
   process.env.PORT,
   console.log(
@@ -41,3 +40,7 @@ app.listen(
       .yellow.bold
   )
 )
+
+const handler = serverless(app)
+
+export default handler

@@ -6,7 +6,9 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server"
+    "start": "nodemon server",
+    "start-deploy": "./node_modules/.bin/netlify-lambda serve src",
+    "build": "./node_modules/.bin/netlify-lambda build src"
   },
   "author": "Prem Goswami",
   "license": "MIT",
@@ -20,6 +22,8 @@
     "express-async-handler": "^1.2.0",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^6.9.1",
-    "nodemon": "^2.0.20"
+    "netlify-lambda": "^2.0.16",
+    "nodemon": "^2.0.20",
+    "serverless-http": "^3.2.0"
   }
 }
