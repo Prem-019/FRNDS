@@ -24,6 +24,7 @@ const userSchema = mongoose.Schema(
     },
     city: {
       type: String,
+      required: true,
     },
     country: {
       type: String,

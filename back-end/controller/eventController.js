@@ -140,7 +140,10 @@ const deleteEvent = asyncHandler(async (req, res) => {
 // @Route  GET /api/events/
 // @access PRIVATE auth
 const getAllEvents = asyncHandler(async (req, res) => {
-  const events = await Event.find({}).populate('registeredUsers', 'name email')
+  const events = await Event.find({ city: req.query.city }).populate(
+    'registeredUsers',
+    'name email'
+  )
   res.json(events)
 })
 

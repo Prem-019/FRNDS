@@ -58,6 +58,7 @@ const registerUser = asyncHandler(async (req, res) => {
     name,
     email,
     password,
+    city,
   })
 
   if (user) {
@@ -66,6 +67,7 @@ const registerUser = asyncHandler(async (req, res) => {
       img: user.img,
       name: user.name,
       email: user.email,
+      city: user.city,
       category: user.category,
       userType: user.userType,
       personality: user.personality,
