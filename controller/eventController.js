@@ -11,16 +11,18 @@ const createEvent = asyncHandler(async (req, res) => {
     details,
     img,
     venue,
-    location,
     date,
-    createdBy,
     registeredUsers,
-    attendedUsers,
     startTime,
     endTime,
+    personality,
+    emotion,
+    anxiety,
     minimumScore,
     limit,
   } = req.body
+
+  const createdBy = req.user._id
 
   const existingEvent = await Event.findOne({ name: name })
   if (existingEvent) {
@@ -31,12 +33,17 @@ const createEvent = asyncHandler(async (req, res) => {
   const event = await Event.create({
     name,
     city,
-    venue,
     details,
     img,
+    venue,
     date,
     createdBy,
     registeredUsers,
+    startTime,
+    endTime,
+    personality,
+    emotion,
+    anxiety,
     minimumScore,
     limit,
   })
@@ -52,6 +59,11 @@ const registerEvent = asyncHandler(async (req, res) => {
   const selectedEvent = await Event.findById(req.params.id)
 
   if (selectedEvent) {
+    if (selectedEvent.registeredUsers.includes(req.user._id)) {
+      res.status(403)
+      throw new Error('Already Registered for this event!')
+    }
+
     if (!selectedEvent.isOpen) {
       res.status(400)
       throw new Error('Registration is closed!')
@@ -69,6 +81,21 @@ const registerEvent = asyncHandler(async (req, res) => {
     ) {
       res.status(400)
       throw new Error('Incomplete profile for registration')
+    }
+
+    if (req.user.personality !== selectedEvent.personality) {
+      res.status(400)
+      throw new Error('Personality does not match')
+    }
+
+    if (req.user.anxiety !== selectedEvent.anxiety) {
+      res.status(400)
+      throw new Error('Personality does not match')
+    }
+
+    if (req.user.emotion !== selectedEvent.emotion) {
+      res.status(400)
+      throw new Error('Personality does not match')
     }
 
     if (req.user.score < selectedEvent.minimumScore) {
@@ -91,6 +118,36 @@ const registerEvent = asyncHandler(async (req, res) => {
   }
 })
 
+// @desc   De-Register for an event
+// @Route  POST /api/events/deregister
+// @access PRIVATE auth
+const deregisterEvent = asyncHandler(async (req, res) => {
+  res.json({ message: 'In Progress' })
+  // const selectedEvent = await Event.findById(req.params.id)
+
+  // if (selectedEvent) {
+  //   if (selectedEvent.registeredUsers.includes(req.user._id)) {
+  //     const index = selectedEvent.registeredUsers.findIndex(
+  //       (number) => number === req.user._id
+  //     )
+
+  //     console.log(selectedEvent.registeredUsers, req.user._id)
+
+  //     // selectedEvent.registeredUsers = updatedUsers
+  //     // await selectedEvent.save()
+
+  //     res.status(201)
+  //     res.json({ message: 'De-Registered for this Event Successfully!' })
+  //   } else {
+  //     res.status(404)
+  //     throw new Error('User not registered or de-registered already')
+  //   }
+  // } else {
+  //   res.status(400)
+  //   throw new Error('Event not found!')
+  // }
+})
+
 // @desc   Get all events
 // @Route  GET /api/events/:id
 // @access PRIVATE Admin
@@ -110,6 +167,12 @@ const updateEvent = asyncHandler(async (req, res) => {
     event.limit = req.body.limit || event.limit
     event.reward = req.body.reward || event.reward
     event.isOpen = req.body.isOpen || event.isOpen
+    event.startTime = req.body.startTime || event.startTime
+    event.endTime = req.body.endTime || event.endTime
+    event.anxiety = req.body.anxiety || event.anxiety
+    event.emotion = req.body.emotion || event.emotion
+    event.personality = req.body.personality || event.personality
+    
 
     await event.save()
     res.status(200)
@@ -161,6 +224,7 @@ const getMyEvents = asyncHandler(async (req, res) => {
 export {
   createEvent,
   registerEvent,
+  deregisterEvent,
   getAllEvents,
   getMyEvents,
   updateEvent,

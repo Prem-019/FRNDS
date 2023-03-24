@@ -23,10 +23,6 @@ const eventSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    location: {
-      type: String,
-      required: true,
-    },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
@@ -56,6 +52,19 @@ const eventSchema = mongoose.Schema(
       default: 0,
       required: true,
     },
+    personality: {
+      type: String,
+      enum: ['Introvert', 'Extrovert', 'Ambivert', null],
+      default: null,
+    },
+    anxiety: {
+      type: Number,
+      default: 0,
+    },
+    emotion: {
+      type: Number,
+      default: 0,
+    },
     registeredUsers: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -66,15 +75,15 @@ const eventSchema = mongoose.Schema(
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user',
+        required: true,
+        default: [],
       },
     ],
     startTime: {
       type: Date,
-      required: true,
     },
     endTime: {
       type: Date,
-      required: true,
     },
     interests: [
       {
