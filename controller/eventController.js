@@ -91,12 +91,12 @@ const registerEvent = asyncHandler(async (req, res) => {
 
     if (req.user.anxiety !== selectedEvent.anxiety) {
       res.status(400)
-      throw new Error('Personality does not match')
+      throw new Error('Anxiety does not match')
     }
 
     if (req.user.emotion !== selectedEvent.emotion) {
       res.status(400)
-      throw new Error('Personality does not match')
+      throw new Error('Emotion does not match')
     }
 
     if (req.user.score < selectedEvent.minimumScore) {
