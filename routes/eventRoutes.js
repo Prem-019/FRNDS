@@ -3,6 +3,7 @@ import { protect, adminCheck } from '../middleware/authMiddleware.js'
 import {
   createEvent,
   deleteEvent,
+  deregisterEvent,
   getAllEvents,
   getMyEvents,
   registerEvent,
@@ -19,5 +20,6 @@ router
 router.route('/myEvents').get(protect, getMyEvents)
 router.route('/create').post(protect, adminCheck, createEvent)
 router.route('/register/:id').post(protect, registerEvent)
+router.route('/deregister/:id').post(protect, deregisterEvent)
 
 export default router

@@ -284,7 +284,7 @@ const giveScore = asyncHandler(async (req, res) => {
 
   if (event) {
     const users = await User.updateMany(
-      { _id: { $in: event.registeredUsers } },
+      { _id: { $in: event.attendedUsers } },
       { $inc: { score: 5 } }
     )
 
