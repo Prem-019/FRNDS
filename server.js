@@ -7,6 +7,7 @@ import serverless from 'serverless-http'
 // ROUTING
 import userRoutes from './routes/userRoutes.js'
 import eventRoutes from './routes/eventRoutes.js'
+import associationRoutes from './routes/associationRoutes.js'
 
 // Custom error handling
 import { notFound, errorHandler } from './middleware/errorMiddleware.js'
@@ -26,6 +27,9 @@ app.use('/api/users', userRoutes)
 
 // event routes
 app.use('/api/events', eventRoutes)
+
+// Association routes
+app.use('/api/associations', associationRoutes)
 
 // Custom middleware with ERROR handler
 app.use(errorHandler)
