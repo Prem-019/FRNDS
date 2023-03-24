@@ -58,7 +58,6 @@ const registerUser = asyncHandler(async (req, res) => {
     name,
     email,
     password,
-    city,
   })
 
   if (user) {

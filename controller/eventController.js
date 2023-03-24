@@ -1,5 +1,6 @@
 import Event from '../models/eventModel.js'
 import asyncHandler from 'express-async-handler'
+import { sendMail } from '../mail/mail.js'
 
 // @desc   Create Event
 // @Route  POST /api/events/create
@@ -110,6 +111,19 @@ const registerEvent = asyncHandler(async (req, res) => {
 
     await selectedEvent.save()
 
+    const otput = `
+      <h1>Event Id: ${selectedEvent._id}</h1>
+      <h3> ${selectedEvent.name} </h3>
+      <h5> Date: ${new Date(selectedEvent.date)} </h5>
+      <p> You are successfully registered for this event. We wish that you have a great experience. </p>
+    `
+
+    sendMail({
+      to: req.user.email,
+      output: otput,
+      subject: 'Registration successful!',
+    })
+
     res.status(201)
     res.json({ message: 'Registered for this Event Successfully!' })
   } else {
@@ -172,7 +186,6 @@ const updateEvent = asyncHandler(async (req, res) => {
     event.anxiety = req.body.anxiety || event.anxiety
     event.emotion = req.body.emotion || event.emotion
     event.personality = req.body.personality || event.personality
-    
 
     await event.save()
     res.status(200)
