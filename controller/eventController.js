@@ -136,30 +136,40 @@ const registerEvent = asyncHandler(async (req, res) => {
 // @Route  POST /api/events/deregister
 // @access PRIVATE auth
 const deregisterEvent = asyncHandler(async (req, res) => {
-  res.json({ message: 'In Progress' })
-  // const selectedEvent = await Event.findById(req.params.id)
+  const selectedEvent = await Event.findById(req.params.id)
 
-  // if (selectedEvent) {
-  //   if (selectedEvent.registeredUsers.includes(req.user._id)) {
-  //     const index = selectedEvent.registeredUsers.findIndex(
-  //       (number) => number === req.user._id
-  //     )
+  if (selectedEvent) {
+    if (selectedEvent.registeredUsers.includes(req.user._id)) {
+      const updatedUsers = selectedEvent.registeredUsers.filter(
+        (userId) => userId.toString() != req.user._id.toString()
+      )
 
-  //     console.log(selectedEvent.registeredUsers, req.user._id)
+      selectedEvent.registeredUsers = updatedUsers
+      await selectedEvent.save()
 
-  //     // selectedEvent.registeredUsers = updatedUsers
-  //     // await selectedEvent.save()
+      const otput = `
+      <h1>Event Id: ${selectedEvent._id}</h1>
+      <h3> ${selectedEvent.name} </h3>
+      <h5> Date: ${new Date(selectedEvent.date)} </h5>
+      <p> You are successfully <b>De-registered</b> for this event.</p>
+    `
 
-  //     res.status(201)
-  //     res.json({ message: 'De-Registered for this Event Successfully!' })
-  //   } else {
-  //     res.status(404)
-  //     throw new Error('User not registered or de-registered already')
-  //   }
-  // } else {
-  //   res.status(400)
-  //   throw new Error('Event not found!')
-  // }
+      sendMail({
+        to: req.user.email,
+        output: otput,
+        subject: 'De-Registration successful!',
+      })
+
+      res.status(201)
+      res.json({ message: 'De-Registered for this Event Successfully!' })
+    } else {
+      res.status(400)
+      throw new Error('User not registered or de-registered already')
+    }
+  } else {
+    res.status(404)
+    throw new Error('Event not found!')
+  }
 })
 
 // @desc   Get all events
