@@ -112,8 +112,7 @@ const registerEvent = asyncHandler(async (req, res) => {
     await selectedEvent.save()
 
     const otput = `
-      <h1> ${selectedEvent.name} </h1>
-      <h3>Event Id: ${selectedEvent._id}</h3>
+      <h1> Event Name: ${selectedEvent.name} </h1>
       <h5> Date: ${new Date(selectedEvent.date)} </h5>
       <p> You are successfully registered for this event. We wish that you have a great experience. </p>
     `
@@ -148,8 +147,7 @@ const deregisterEvent = asyncHandler(async (req, res) => {
       await selectedEvent.save()
 
       const otput = `
-      <h1> ${selectedEvent.name} </h1>
-      <h3>Event Id: ${selectedEvent._id}</h3>
+      <h1> Event Name: ${selectedEvent.name} </h1>
       <h5> Date: ${new Date(selectedEvent.date)} </h5>
       <p> You are successfully <b>De-registered</b> for this event.</p>
     `
