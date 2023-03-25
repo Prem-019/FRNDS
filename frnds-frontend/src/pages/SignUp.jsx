@@ -8,6 +8,7 @@ import Checkbox from "@mui/material/Checkbox";
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
+import Tooltip from "@mui/material/Tooltip";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
@@ -16,6 +17,9 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import IconButton from "@mui/material/IconButton";
 
 // function Copyright(props) {
 //   return (
@@ -34,45 +38,71 @@ const theme = createTheme();
 
 export default function SignUp() {
   let navigate = useNavigate();
+  const [showPassword, setShowPassword] = React.useState(false);
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+  const checkPassword = (p) => {
+    if (p.length < 8) {
+      toast.error("Your password must be at least 8 characters");
+      return false;
+    }
+    if (p.search(/[a-z]/i) < 0) {
+      toast.error("Your password must contain at least one letter.");
+      return false;
+    }
+    if (p.search(/[0-9]/) < 0) {
+      toast.error("Your password must contain at least one digit.");
+      return false;
+    }
+    // if (errors.length > 0) {
+    //     alert(errors.join("\n"));
+    //     return false;
+    // }
+    return true;
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const user = {
       name: data.get("name"),
       email: data.get("email"),
-      password: data.get("password"),
+      password: data.get("password")
     };
 
-    const config = {
-      method: "post",
-      url: `http://localhost:3100/api/users/register`,
-      headers: {
-        "Content-Type": "application/json"
-      },
-      data: JSON.stringify(user)
-    };
+    if (checkPassword(user.password)) {
+      const config = {
+        method: "post",
+        url: `https://frnds-server.onrender.com/api/users/register`,
+        headers: {
+          "Content-Type": "application/json"
+        },
+        data: JSON.stringify(user)
+      };
 
-    axios(config)
-      .then(function (response) {
-        if (response.status === 201) {
-          console.log(response.data)
-          let path = `/dashboard`;
-          toast.success("Registered Successfully")
-          navigate(path);
-          localStorage.setItem("user", JSON.stringify(response.data))
-          localStorage.setItem("token", response.data.token)
-          localStorage.removeItem("preferences")
-        }
-      })
-      .catch(function (error) {
-        console.log(error);
-        toast.error(error.response.data.message)
-      });
+      axios(config)
+        .then(function (response) {
+          if (response.status === 201) {
+            console.log(response.data);
+            let path = `/dashboard`;
+            toast.success("Registered Successfully");
+            navigate(path);
+            localStorage.setItem("user", JSON.stringify(response.data));
+            localStorage.setItem("token", response.data.token);
+            localStorage.removeItem("preferences");
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+          toast.error(error.response.data.message);
+        });
+    }
   };
 
   return (
     <ThemeProvider theme={theme}>
-      <ToastContainer/>
+      <ToastContainer />
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box
@@ -87,7 +117,7 @@ export default function SignUp() {
             backdropFilter: "blur( 5px )",
             WebkitBackdropFilter: "blur( 5px )",
             borderRadius: "10px",
-            border: "1px solid rgba( 255, 255, 255, 0.18 )",
+            border: "1px solid rgba( 255, 255, 255, 0.18 )"
           }}
         >
           <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
@@ -103,7 +133,7 @@ export default function SignUp() {
             sx={{ mt: 3, p: 3 }}
           >
             <Grid container spacing={2}>
-            <Grid item xs={12}>
+              <Grid item xs={12}>
                 <TextField
                   required
                   fullWidth
@@ -124,15 +154,31 @@ export default function SignUp() {
                 />
               </Grid>
               <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  name="password"
-                  label="Password"
-                  type="password"
-                  id="password"
-                  autoComplete="new-password"
-                />
+                <Tooltip
+                  placement="right"
+                  title={`Your password must: \nBe at least 8 characters\n Have at least one number \nHave at least one letter`}
+                >
+                  <TextField
+                    required
+                    fullWidth
+                    name="password"
+                    label="Password"
+                    type={showPassword ? "text" : "password"}
+                    id="password"
+                    autoComplete="new-password"
+                    InputProps={{
+                      endAdornment: (
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          edge="end"
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      )
+                    }}
+                  ></TextField>
+                </Tooltip>
               </Grid>
               {/* <Grid item xs={12}>
                 <FormControlLabel

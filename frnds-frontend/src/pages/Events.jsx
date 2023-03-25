@@ -1,7 +1,5 @@
 import React from "react";
 import {
-  AppBar,
-  Popover,
   CssBaseline,
   CardMedia,
   CardContent,
@@ -10,26 +8,16 @@ import {
   Button,
   Grid,
   Box,
-  Toolbar,
   Typography,
-  ListItemText,
-  ListItemIcon,
-  ListItemAvatar,
-  ListItem,
-  List,
   Divider,
   Avatar,
   Tab,
   Stack,
   Tooltip
 } from "@mui/material";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import Container from "@mui/material/Container";
 import Modal from "@mui/material/Modal";
 import TextField from "@mui/material/TextField";
-import LogoutIcon from "@mui/icons-material/Logout";
-import SettingsIcon from "@mui/icons-material/Settings";
-import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -53,8 +41,8 @@ const cards = [
   {
     title: "Post-Game Grill & Chill",
     venue: "157 University Ave W",
-    city:"Windsor",
-    message:"Registered successfully",
+    city: "Windsor",
+    message: "Registered successfully",
     details:
       "Includes live music, food and drink, games, contests, and opportunities for fans to meet and interact with players or performers.",
     image:
@@ -63,8 +51,8 @@ const cards = [
   {
     title: "Cleans ‘n Eats",
     venue: "571 Erie St E",
-    city:"Windsor",
-    message:"Not enough score to register",
+    city: "Windsor",
+    message: "Not enough score to register",
     details:
       "Join us for a day of fun, creativity, and baking magic! You'll have the opportunity to learn from professional bakers and get hands-on experience with various baking techniques and recipes.",
     image:
@@ -73,8 +61,8 @@ const cards = [
   {
     title: "Coffee & Conversation",
     venue: "800 Wyandotte St E",
-    message:"Registered successfully",
-    city:"Windsor",
+    message: "Registered successfully",
+    city: "Windsor",
     details:
       "Get ready for a day filled with the aromas and tastes of the world's finest coffees. You'll have the opportunity to sample a wide range of specialty coffees from around the world, including rare and exotic blends.",
     image:
@@ -83,8 +71,8 @@ const cards = [
   {
     title: "Google Developer Club Event",
     venue: "401 Sunset Avenue",
-    city:"Windsor",
-    message:"Registered successfully",
+    city: "Windsor",
+    message: "Registered successfully",
     details:
       "Join us for a day filled with thought-provoking talks and hands-on workshops led by industry experts and network with other tech enthusiasts.",
     image:
@@ -93,8 +81,8 @@ const cards = [
   {
     title: "Easter 2023",
     venue: "300 Tecumseh Rd E",
-    city:"Windsor",
-    message:"Event fully booked out",
+    city: "Windsor",
+    message: "Event fully booked out",
     details:
       "You'll have the opportunity to participate in an egg hunt, decorate Easter eggs, and take part in other festive activities.",
     image:
@@ -103,8 +91,8 @@ const cards = [
   {
     title: "Bibliophiles Meet",
     venue: "185 Ouellette Avenue",
-    city:"Windsor",
-    message:"Registeration closed",
+    city: "Windsor",
+    message: "Registeration closed",
     details:
       "Join us for a day filled with book discussions, author talks, and literary-themed activities. You'll have the opportunity to connect with other book lovers, discuss your favorite books, and discover new authors and genres.",
     image:
@@ -123,286 +111,125 @@ const users = [
 const theme = createTheme();
 
 function Events() {
-  const [open, setOpen] = React.useState(false);
   const [userOpen, setUserOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
   const handleUserOpen = () => setUserOpen(true);
   const handleUserClose = () => setUserOpen(false);
-  const [anchorEl, setAnchorEl] = React.useState(null);
   const [value, setValue] = React.useState("1");
   const [current, setCurrent] = React.useState(null);
-  const token = localStorage.getItem('token')
+  const token = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user"));
   const [events, setEvents] = React.useState([]);
   const [myEvents, setMyEvents] = React.useState([]);
 
-
   React.useEffect(() => {
-    getEvents()
-    getMyEvents()
-    if(events.length === 0){
-      setEvents(cards)
+    getEvents();
+    getMyEvents();
+    if (events.length === 0) {
+      setEvents(cards);
     }
-    if(myEvents.length === 0){
-      setMyEvents(cards.slice(2,4))
+    if (myEvents.length === 0) {
+      setMyEvents(cards.slice(2, 4));
     }
-  }, [])
-  
+    console.log(myEvents);
+  }, []);
+
   const getEvents = () => {
+    console.log(user.city);
     const config = {
-      method: 'get',
-      url: 'http://localhost:3100/api/events',
-      headers: { 
-        'Authorization': 'Bearer '+ token
-      },
+      method: "get",
+      url: `https://frnds-server.onrender.com/api/events/?city=Windsor`,
+      headers: {
+        Authorization: "Bearer " + token
+      }
     };
-    
+
     axios(config)
-    .then(function (response) {
-      setEvents(response.data);
-    })
-    .catch(function (error) {
-      console.log(error);
-      toast.error(error.response.data.message)
-    });
-  }
+      .then(function (response) {
+        console.log(response.data);
+        setEvents(response.data);
+      })
+      .catch(function (error) {
+        console.log(error);
+        toast.error(error.response.data.message);
+      });
+  };
 
   const getMyEvents = () => {
     const config = {
-      method: 'get',
-      url: 'http://localhost:3100/api/events/myEvents',
-      headers: { 
-        'Authorization': 'Bearer '+ token
-      },
+      method: "get",
+      url: "https://frnds-server.onrender.com/api/events/myEvents",
+      headers: {
+        Authorization: "Bearer " + token
+      }
     };
-    
-    axios(config)
-    .then(function (response) {
-      setMyEvents(response.data);
-    })
-    .catch(function (error) {
-      console.log(error);
-      toast.error(error.response.data.message)
-    });
-  }
 
-  const registerForEvent = (id, message) =>{
-    // var config = {
-    //   method: 'post',
-    //   url: `http://localhost:3100/api/events/register/${id}`,
-    //   headers: { 
-    //     'Authorization': 'Bearer '+ token
-    //   }
-    // };
-    
-    // axios(config)
-    // .then(function (response) {
-    //   console.log(JSON.stringify(response.data));
-    //   toast.success("Register Successfully")
-    // })
-    // .catch(function (error) {
-    //   console.log(error);
-    //   toast.error(error.response.data.message)
-    // });
-    toast.info(message)
-  }
+    axios(config)
+      .then(function (response) {
+        setMyEvents(response.data);
+      })
+      .catch(function (error) {
+        console.log(error);
+        toast.error(error.response.data.message);
+      });
+  };
+
+  const registerForEvent = (id, message) => {
+    var config = {
+      method: "post",
+      url: `https://frnds-server.onrender.com/api/events/register/${id}`,
+      headers: {
+        Authorization: "Bearer " + token
+      }
+    };
+
+    axios(config)
+      .then(function (response) {
+        console.log(JSON.stringify(response.data));
+        toast.success("Register Successfully");
+      })
+      .catch(function (error) {
+        console.log(error);
+        toast.error(error.response.data.message);
+      });
+    // toast.info(message)
+  };
+
+  const deregisterForEvent = (id) => {
+    let config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: `https://frnds-server.onrender.com/api/events/deregister/${id}`,
+      headers: {
+        Authorization: "Bearer " + token
+      }
+    };
+
+    axios
+      .request(config)
+      .then((response) => {
+        console.log(JSON.stringify(response.data));
+        toast.success(response.data.message);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
-  };
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleAvtar = () => {
-    setAnchorEl(null);
-  };
-
-  const createEvent = () => {
-    let score = Math.floor(Math.random() * (500 - 1 + 1)) + 1;
-    if (score > 300) {
-      toast.success("Event created");
-    } else {
-      toast.error("Not enough score to create event");
+    if (newValue === "2") {
+      getMyEvents();
+    }
+    if (newValue === "1") {
+      getEvents();
     }
   };
-
-  const avatarOpen = Boolean(anchorEl);
-  const id = open ? "simple-popover" : undefined;
 
   return (
     <ThemeProvider theme={theme}>
       <ToastContainer />
       <CssBaseline />
-      {/* <AppBar position="relative" color="secondary">
-        <Toolbar
-          sx={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between"
-          }}
-        >
-          <Typography variant="h6" color="inherit" noWrap>
-            FRNDS
-          </Typography>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "space-between"
-            }}
-          >
-            <Button variant="contained" onClick={handleOpen}>
-              Create Event
-            </Button>
-            <Modal open={open} onClose={handleClose}>
-              <Box sx={style}>
-                <Typography id="create-event-modal" variant="h6" component="h2">
-                  Add Event Details
-                </Typography>
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  id="title"
-                  label="Event Title"
-                  name="title"
-                  autoComplete="title"
-                  autoFocus
-                  size="small"
-                  variant="filled"
-                />
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  id="details"
-                  label="Details"
-                  name="details"
-                  autoComplete="details"
-                  autoFocus
-                  size="small"
-                  variant="filled"
-                />
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  id="location"
-                  label="Location"
-                  name="location"
-                  autoComplete="location"
-                  autoFocus
-                  size="small"
-                  variant="filled"
-                />
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  id="capacity"
-                  label="Capacity"
-                  name="capacity"
-                  autoComplete="capacity"
-                  autoFocus
-                  size="small"
-                  variant="filled"
-                />
-                <Button
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  sx={{ mt: 3, mb: 2 }}
-                  onClick={createEvent}
-                >
-                  Create
-                </Button>
-              </Box>
-            </Modal>
-            
-          </Box>
-        </Toolbar>
-      </AppBar> */}
       <main>
-      {/* <Box
-          sx={{
-            bgcolor: "background.paper",
-            pt: 2,
-            pr:2,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-end"
-          }}
-        >
-        <Button variant="contained" onClick={handleOpen}>
-          Create Event
-        </Button>
-        <Modal open={open} onClose={handleClose}>
-          <Box sx={style}>
-            <Typography id="create-event-modal" variant="h6" component="h2">
-              Add Event Details
-            </Typography>
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="title"
-              label="Event Title"
-              name="title"
-              autoComplete="title"
-              autoFocus
-              size="small"
-              variant="filled"
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="details"
-              label="Details"
-              name="details"
-              autoComplete="details"
-              autoFocus
-              size="small"
-              variant="filled"
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="location"
-              label="Location"
-              name="location"
-              autoComplete="location"
-              autoFocus
-              size="small"
-              variant="filled"
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="capacity"
-              label="Capacity"
-              name="capacity"
-              autoComplete="capacity"
-              autoFocus
-              size="small"
-              variant="filled"
-            />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-              onClick={createEvent}
-            >
-              Create
-            </Button>
-          </Box>
-        </Modal>
-        </Box> */}
         <Box
           sx={{
             bgcolor: "background.paper",
@@ -433,37 +260,159 @@ function Events() {
                           display: "flex",
                           flexDirection: "column"
                         }}
+                        raised
                       >
                         <CardMedia
                           component="img"
-                          image={card.image}
+                          image={
+                            card.img ||
+                            "https://images.unsplash.com/photo-1541014871-22a89a9281e6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=435&q=80"
+                          }
                           alt="random"
                           sx={{ width: "100%", height: "300px" }}
                         />
                         <CardContent sx={{ flexGrow: 1 }}>
-                          <Typography gutterBottom variant="h5" component="h2">
+                          <Typography
+                            gutterBottom
+                            variant="h5"
+                            component="h2"
+                            mb={0}
+                            sx={{
+                              fontSize: {
+                                lg: 24,
+                                md: 20,
+                                sm: 18,
+                                xs: 15
+                              }
+                            }}
+                          >
                             {card.name}
                           </Typography>
-                          <Typography mb={2} sx={{ height: "200px" }}>
+                          <Typography
+                            mb={1}
+                            color="primary"
+                            sx={{
+                              fontSize: {
+                                lg: 14,
+                                md: 10,
+                                sm: 12,
+                                xs: 10
+                              }
+                            }}
+                          >
+                            {new Date(card.date).toDateString()}
+                          </Typography>
+                          <Typography
+                            mb={2}
+                            sx={{
+                              height: "200px",
+                              fontSize: {
+                                lg: 15,
+                                md: 14,
+                                sm: 14,
+                                xs: 12
+                              }
+                            }}
+                          >
                             {card.details}
                           </Typography>
+                          {card.startTime && (
+                            <Typography
+                              sx={{
+                                fontStyle: "italic",
+                                fontSize: {
+                                  lg: 14,
+                                  md: 10,
+                                  sm: 12,
+                                  xs: 10
+                                }
+                              }}
+                            >
+                              {`Booking Starts: ${new Date(
+                                card.startTime
+                              ).toDateString()}`}
+                            </Typography>
+                          )}
+                          {card.endTime && (
+                            <Typography
+                              mb={1}
+                              sx={{
+                                fontStyle: "italic",
+                                fontSize: {
+                                  lg: 14,
+                                  md: 10,
+                                  sm: 12,
+                                  xs: 10
+                                }
+                              }}
+                            >
+                              {`Booking Ends: ${new Date(
+                                card.endTime
+                              ).toDateString()}`}
+                            </Typography>
+                          )}
                           <Divider />
-                          <Typography mt={2} color="primary">
+                          <Typography
+                            mt={2}
+                            color="primary"
+                            sx={{
+                              fontSize: {
+                                lg: 16,
+                                md: 12,
+                                sm: 14,
+                                xs: 12
+                              }
+                            }}
+                          >
                             {card.venue + ", " + card.city}
                           </Typography>
                         </CardContent>
-                        <CardActions>
+                        <CardActions
+                          sx={{
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "flex-start",
+                            alignItems: "flex-start"
+                          }}
+                        >
                           <Button
                             size="medium"
                             variant="contained"
                             color="secondary"
-                            sx={{ ml: 1, mb: 2 }}
-                            onClick={() =>
-                              registerForEvent(card._id, card.message)
+                            sx={{ ml: 1, mb: 1 }}
+                            onClick={() => {
+                              registerForEvent(card._id);
+                            }}
+                            disabled={
+                              card.registeredUsers &&
+                              card.registeredUsers.find(
+                                (ru) => ru.id === user._id
+                              )
                             }
                           >
-                            Join Event
+                            {`Register`}
                           </Button>
+
+                          <Typography
+                            mb={1}
+                            ml={1}
+                            color="error"
+                            sx={{
+                              fontSize: {
+                                lg: 14,
+                                md: 10,
+                                sm: 12,
+                                xs: 10
+                              }
+                            }}
+                          >
+                            {card.registeredUsers &&
+                              (card.limit - card.registeredUsers.length > 0
+                                ? `*Only ${
+                                    card.limit - card.registeredUsers.length
+                                  } Spots left*`
+                                : `*Sold Out*`)}
+                          </Typography>
                           <ToastContainer />
                         </CardActions>
                       </Card>
@@ -483,23 +432,76 @@ function Events() {
                           display: "flex",
                           flexDirection: "column"
                         }}
+                        raised
                       >
                         <CardMedia
                           component="img"
-                          image={card.image}
+                          image={
+                            card.img ||
+                            "https://images.unsplash.com/photo-1541014871-22a89a9281e6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=435&q=80"
+                          }
                           alt="random"
                           sx={{ width: "100%", height: "300px" }}
                         />
                         <CardContent sx={{ flexGrow: 1 }}>
-                          <Typography gutterBottom variant="h5" component="h2">
+                          <Typography
+                            gutterBottom
+                            variant="h5"
+                            component="h2"
+                            mb={0}
+                            sx={{
+                              fontSize: {
+                                lg: 24,
+                                md: 20,
+                                sm: 18,
+                                xs: 15
+                              }
+                            }}
+                          >
                             {card.name}
                           </Typography>
-                          <Typography mb={2} sx={{ height: "200px" }}>
+                          <Typography
+                            mb={1}
+                            color="primary"
+                            sx={{
+                              fontSize: {
+                                lg: 14,
+                                md: 10,
+                                sm: 12,
+                                xs: 10
+                              }
+                            }}
+                          >
+                            {new Date(card.date).toDateString()}
+                          </Typography>
+                          <Typography
+                            mb={2}
+                            sx={{
+                              height: "200px",
+                              fontSize: {
+                                lg: 16,
+                                md: 14,
+                                sm: 14,
+                                xs: 12
+                              }
+                            }}
+                          >
                             {card.details}
                           </Typography>
                           <Divider />
-                          <Typography mt={2} color="primary">
-                            {card.venue + ", "+ card.city}
+                          <Typography
+                            mt={2}
+                            color="primary"
+                            sx={{
+                              fontSize: {
+                                lg: 16,
+                                md: 12,
+                                sm: 14,
+                                xs: 12
+                              }
+                            }}
+                          >
+                            {card.venue + ", " + card.city}
                           </Typography>
                         </CardContent>
                         <Divider />
@@ -508,89 +510,95 @@ function Events() {
                         </Typography>
                         <CardActions>
                           <Stack direction="row" spacing={2} p={2} pt={1}>
-                            {users.map((name) => {
-                              return (
-                                <>
-                                  <Avatar
-                                    alt={name.name}
-                                    src="/static/images/avatar/1.jpg"
-                                    sx={{ cursor: "pointer" }}
-                                    onClick={() => {
-                                      setCurrent(name.name);
-                                      handleUserOpen();
-                                    }}
-                                  />
-                                  <Modal
-                                    open={userOpen}
-                                    onClose={handleUserClose}
-                                  >
-                                    <Box sx={style}>
-                                      <Stack direction="row" spacing={2} mb={2}>
-                                        <Avatar
-                                          alt={current}
-                                          src="/static/images/avatar/1.jpg"
-                                        />
-                                        <Typography
-                                          id="user-modal"
-                                          variant="h6"
-                                          component="h2"
-                                          pt={0.5}
+                            {card.registeredUsers &&
+                              card.registeredUsers.length > 0 &&
+                              card.registeredUsers.map((name) => {
+                                return (
+                                  <>
+                                    <Avatar
+                                      alt={name.name}
+                                      src="/static/images/avatar/1.jpg"
+                                      sx={{ cursor: "pointer" }}
+                                      onClick={() => {
+                                        setCurrent(name.name);
+                                        handleUserOpen();
+                                      }}
+                                    />
+                                    <Modal
+                                      open={userOpen}
+                                      onClose={handleUserClose}
+                                    >
+                                      <Box sx={style}>
+                                        <Stack
+                                          direction="row"
+                                          spacing={2}
+                                          mb={2}
                                         >
-                                          {current}
-                                        </Typography>
-                                      </Stack>
-                                      <TextField
-                                        margin="normal"
-                                        required
-                                        fullWidth
-                                        id="message"
-                                        label="Type your message here"
-                                        name="message"
-                                        autoComplete="message"
-                                        autoFocus
-                                        size="small"
-                                        variant="filled"
-                                      />
-                                      <Stack
-                                        direction="row"
-                                        spacing={2}
-                                        p={2}
-                                        mt={2}
-                                      >
-                                        <Tooltip title="Enter message that you want to send user">
-                                          <Button
-                                            type="submit"
-                                            variant="contained"
-                                            onClick={() => {
-                                              handleUserClose();
-                                              toast.success(
-                                                "Message sent successfully"
-                                              );
-                                            }}
+                                          <Avatar
+                                            alt={current}
+                                            src="/static/images/avatar/1.jpg"
+                                          />
+                                          <Typography
+                                            id="user-modal"
+                                            variant="h6"
+                                            component="h2"
+                                            pt={0.5}
                                           >
-                                            Message User
-                                          </Button>
-                                        </Tooltip>
-                                        <Tooltip title="Enter reason for reporting user">
-                                          <Button
-                                            type="submit"
-                                            variant="contained"
-                                            onClick={() => {
-                                              handleUserClose();
-                                              toast.success("User Reported");
-                                            }}
-                                          >
-                                            Report User
-                                          </Button>
-                                        </Tooltip>
-                                      </Stack>
-                                    </Box>
-                                  </Modal>
-                                </>
-                              );
-                            })}
-                            <Typography variant="body2"> + 49 more</Typography>
+                                            {current}
+                                          </Typography>
+                                        </Stack>
+                                        <TextField
+                                          margin="normal"
+                                          required
+                                          fullWidth
+                                          id="message"
+                                          label="Type your reason here"
+                                          name="message"
+                                          autoComplete="message"
+                                          autoFocus
+                                          size="small"
+                                          variant="filled"
+                                        />
+                                        <Stack
+                                          direction="row"
+                                          spacing={2}
+                                          p={2}
+                                          mt={2}
+                                          alignItems="center"
+                                          justifyContent="center"
+                                        >
+                                            <Button
+                                              type="submit"
+                                              variant="contained"
+                                              onClick={() => {
+                                                handleUserClose();
+                                                toast.success("User Reported");
+                                              }}
+                                            >
+                                              Report User
+                                            </Button>
+                                        </Stack>
+                                      </Box>
+                                    </Modal>
+                                  </>
+                                );
+                              })}
+                            {/* <Typography variant="body2"> + 49 more</Typography> */}
                           </Stack>
+                        </CardActions>
+                        <CardActions>
+                          <Button
+                            size="medium"
+                            variant="contained"
+                            color="secondary"
+                            sx={{ ml: 1, mb: 2 }}
+                            onClick={() =>{
+                              deregisterForEvent(card._id, card.message)
+                            }}
+                          >
+                            Deregister
+                          </Button>
+                          <ToastContainer />
                         </CardActions>
                       </Card>
                     </Grid>

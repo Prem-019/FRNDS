@@ -85,21 +85,21 @@ const interests = [
 
 export const AccountPreferences = (props) => {
   const [values, setValues] = useState({
-    personality1: 0,
-    personality2: 0,
-    personality3: 0,
-    personality4: 0,
-    personality5: 0,
-    anxiety1: 0,
-    anxiety2: 0,
-    anxiety3: 0,
-    anxiety4: 0,
-    anxiety5: 0,
-    emotional1: 0,
-    emotional2: 0,
-    emotional3: 0,
-    emotional4: 0,
-    emotional5: 0,
+    personality1: 2,
+    personality2: 4,
+    personality3: 1,
+    personality4: 3,
+    personality5: 5,
+    anxiety1: 5,
+    anxiety2: 3,
+    anxiety3: 1,
+    anxiety4: 5,
+    anxiety5: 4,
+    emotional1: 1,
+    emotional2: 3,
+    emotional3: 4,
+    emotional4: 2,
+    emotional5: 5,
     interests : []
   });
 
@@ -156,7 +156,7 @@ export const AccountPreferences = (props) => {
     console.log(userData);
     const config = {
       method: "put",
-      url: `http://localhost:3100/api/users/profile`,
+      url: `https://frnds-server.onrender.com/api/users/profile`,
       headers: { 
         'Authorization': 'Bearer '+ token, 
         'Content-Type': 'application/json'

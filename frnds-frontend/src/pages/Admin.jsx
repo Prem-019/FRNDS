@@ -16,11 +16,9 @@ import Link from '@mui/material/Link';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import { MainListItems, secondaryListItems } from '../components/listItems';
+import { MainListItems, SecondaryListItems } from '../components/listItems';
 import Events from './Events'
 import Profile from './Profile'
-import Associations from './Associations'
-import Doctors from './Doctors'
 // import Chart from './Chart';
 // import Deposits from './Deposits';
 // import Orders from './Orders';
@@ -37,6 +35,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import SettingsIcon from "@mui/icons-material/Settings";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import { useNavigate } from "react-router-dom";
+import AdminEvents from './AdminEvents';
 
 function Copyright(props) {
   return (
@@ -99,7 +98,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 const mdTheme = createTheme();
 
-function DashboardContent() {
+function AdminContent() {
   const [open, setOpen] = React.useState(true);
   const [userOpen, setUserOpen] = React.useState(false);
   const handleUserOpen = () => setUserOpen(true);
@@ -108,7 +107,9 @@ function DashboardContent() {
   const avatarOpen = Boolean(anchorEl);
   const id = open ? "simple-popover" : undefined;
   let navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem("user") )
+  const user = JSON.parse(localStorage.getItem("user") )?? {name:"Jane Doe"}
+  const  currentTab = localStorage.getItem('currentTab') ?? "Account";
+  console.log(currentTab);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -121,14 +122,18 @@ function DashboardContent() {
   const toggleDrawer = () => {
     setOpen(!open);
   };
-  const currentTab = localStorage.getItem('currentTab') ?? "Account";
-  console.log(currentTab)
 
   React.useEffect(() => {
-    if(!user){
-      navigate("/signin")
+   
+    const user = JSON.parse(localStorage.getItem('user'))
+    if(!user.isAdmin){
+        let path = `/dashboard`
+        navigate(path);
     }
   }, [])
+  
+
+
 
   return (
     <ThemeProvider theme={mdTheme}>
@@ -211,7 +216,7 @@ function DashboardContent() {
                     <ListItemIcon>
                       <SettingsIcon />
                     </ListItemIcon>
-                    <ListItemText secondary="Profile Settings"  />
+                    <ListItemText secondary="Account Settings"  />
                   </ListItem>
                   <Divider />
                   <ListItem sx={{ p: 1, pl: 2, cursor:"pointer" }} onClick={
@@ -245,7 +250,7 @@ function DashboardContent() {
           </Toolbar>
           <Divider />
           <List component="nav">
-            <MainListItems />
+            <SecondaryListItems />
             {/* <Divider sx={{ my: 1 }} />
             {secondaryListItems} */}
           </List>
@@ -275,8 +280,6 @@ function DashboardContent() {
                 >
                   {(currentTab === "Events" || currentTab === "Événements") && <Events/>}
                   {(currentTab === "My Profile" || currentTab === "Mon profil") && <Profile/>}
-                  {currentTab === "Associations" && <Associations/>}
-                  {(currentTab === "Doctors" || currentTab === "Médecins") && <Doctors/>}
                 </Paper>
               </Grid>
             {/* <Copyright sx={{ pt: 4 }} /> */}
@@ -287,6 +290,6 @@ function DashboardContent() {
   );
 }
 
-export default function Dashboard() {
-  return <DashboardContent />;
+export default function Admin() {
+  return <AdminContent />;
 }

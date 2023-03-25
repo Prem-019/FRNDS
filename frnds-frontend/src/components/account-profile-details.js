@@ -30,7 +30,7 @@ export const AccountProfileDetails = (props) => {
   const updateUser = () => {
     const config = {
       method: "put",
-      url: `http://localhost:3100/api/users/profile`,
+      url: `https://frnds-server.onrender.com/api/users/profile`,
       headers: { 
         'Authorization': 'Bearer '+ token, 
         'Content-Type': 'application/json'
@@ -130,6 +130,17 @@ export const AccountProfileDetails = (props) => {
                 onChange={handleChange}
                 required
                 value={values.country}
+                variant="outlined"
+              />
+            </Grid>
+            <Grid item md={6} xs={12}>
+              <TextField
+                fullWidth
+                label="City"
+                name="city"
+                onChange={handleChange}
+                required
+                value={values.city}
                 variant="outlined"
               />
             </Grid>

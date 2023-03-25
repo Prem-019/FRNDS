@@ -16,6 +16,9 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import IconButton from "@mui/material/IconButton";
 
 // function Copyright(props) {
 //   return (
@@ -34,6 +37,29 @@ const theme = createTheme();
 
 export default function SignIn() {
   let navigate = useNavigate();
+  const [showPassword, setShowPassword] = React.useState(false);
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+  const checkPassword =(p) => {
+    if (p.length < 8) {
+      toast.error("Your password must be at least 8 characters"); 
+      return false;
+  }
+  if (p.search(/[a-z]/i) < 0) {
+      toast.error("Your password must contain at least one letter.");
+      return false;
+  }
+  if (p.search(/[0-9]/) < 0) {
+      toast.error("Your password must contain at least one digit."); 
+      return false;
+  }
+  // if (errors.length > 0) {
+  //     alert(errors.join("\n"));
+  // }
+  return true;
+}
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -43,9 +69,11 @@ export default function SignIn() {
       password: data.get("password")
     };
 
-    const config = {
+    // if(checkPassword(user.password)){
+    
+      const config = {
       method: "post",
-      url: `http://localhost:3100/api/users/login`,
+      url: `https://frnds-server.onrender.com/api/users/login`,
       headers: {
         "Content-Type": "application/json"
       },
@@ -55,7 +83,13 @@ export default function SignIn() {
     axios(config)
       .then(function (response) {
         if (response.status === 200) {
-          let path = `/dashboard`;
+          let path
+          if(response.data.isAdmin){
+            path = `/admin`;
+          }
+          else{
+            path = `/dashboard`
+          }
           toast.success("Login Successful")
           navigate(path);
           localStorage.setItem("user", JSON.stringify(response.data))
@@ -66,6 +100,7 @@ export default function SignIn() {
         console.log(error);
         toast.error(error.response.data.message)
       });
+    // }
   };
 
   return (
@@ -116,9 +151,20 @@ export default function SignIn() {
               fullWidth
               name="password"
               label="Password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               id="password"
               autoComplete="current-password"
+              InputProps={{
+                endAdornment: (
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                    edge="end"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                )
+              }}
             />
             {/* <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}

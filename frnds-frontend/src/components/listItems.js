@@ -32,13 +32,7 @@ export const MainListItems = () => {
         <ListItemIcon>
           <AccountCircleIcon />
         </ListItemIcon>
-        <ListItemText primary="Account" />
-      </ListItemButton>
-      <ListItemButton name="event" onClick={changeTab}>
-        <ListItemIcon>
-          <CelebrationIcon />
-        </ListItemIcon>
-        <ListItemText primary="Events" />
+        <ListItemText primary="My Profile" />
       </ListItemButton>
       <ListItemButton name="association" onClick={changeTab}>
         <ListItemIcon>
@@ -52,7 +46,13 @@ export const MainListItems = () => {
         </ListItemIcon>
         <ListItemText primary="Doctors" />
       </ListItemButton>
-      <ListItemButton name="logout" onClick={() => { 
+      <ListItemButton name="event" onClick={changeTab}>
+        <ListItemIcon>
+          <CelebrationIcon />
+        </ListItemIcon>
+        <ListItemText primary="Events" />
+      </ListItemButton>
+      <ListItemButton name="logout" onClick={() => {
         navigate("/signin")
       }}>
         <ListItemIcon>
@@ -64,28 +64,34 @@ export const MainListItems = () => {
   )
 };
 
-export const secondaryListItems = (
-  <React.Fragment>
-    <ListSubheader component="div" inset>
-      Saved reports
-    </ListSubheader>
-    <ListItemButton>
-      <ListItemIcon>
-        <AssignmentIcon />
-      </ListItemIcon>
-      <ListItemText primary="Current month" />
-    </ListItemButton>
-    <ListItemButton>
-      <ListItemIcon>
-        <AssignmentIcon />
-      </ListItemIcon>
-      <ListItemText primary="Last quarter" />
-    </ListItemButton>
-    <ListItemButton>
-      <ListItemIcon>
-        <AssignmentIcon />
-      </ListItemIcon>
-      <ListItemText primary="Year-end sale" />
-    </ListItemButton>
-  </React.Fragment>
-);
+export const SecondaryListItems = () => {
+  let navigate = useNavigate();
+  const changeTab = (e) => {
+    localStorage.setItem("currentTab", e.target.textContent);
+    window.location.reload();
+  }
+  return (
+    <React.Fragment >
+      <ListItemButton name="account" onClick={changeTab}>
+        <ListItemIcon>
+          <AccountCircleIcon />
+        </ListItemIcon>
+        <ListItemText primary="My Profile" />
+      </ListItemButton>
+      <ListItemButton name="event" onClick={changeTab}>
+        <ListItemIcon>
+          <CelebrationIcon />
+        </ListItemIcon>
+        <ListItemText primary="Events" />
+      </ListItemButton>
+      <ListItemButton name="logout" onClick={() => {
+        navigate("/signin")
+      }}>
+        <ListItemIcon>
+          <LogoutIcon />
+        </ListItemIcon>
+        <ListItemText primary="Logout" />
+      </ListItemButton>
+    </React.Fragment >
+  )
+};

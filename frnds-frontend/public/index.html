@@ -24,10 +24,11 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <title>React App</title>
+    <title>FRNDS</title>
   </head>
   <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <!-- <noscript>You need to enable JavaScript to run this app.</noscript> -->
+   
     <div id="root"></div>
     <!--
       This HTML file is a template.
@@ -39,5 +40,13 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
+    <script src="//cdn.conveythis.com/javascript/conveythis-initializer.js"></script>
+    <script type="text/javascript">
+      document.addEventListener("DOMContentLoaded", function(e) {
+        ConveyThis_Initializer.init({
+          api_key: "pub_823513969817a113af9059ee6da974e2"
+        });
+      });
+    </script>
   </body>
 </html>
