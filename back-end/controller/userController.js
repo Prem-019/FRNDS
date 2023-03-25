@@ -1,4 +1,5 @@
 import User from './../models/userModel.js'
+import Event from '../models/eventModel.js'
 import asyncHandler from 'express-async-handler'
 import generateToken from '../utils/generateToken.js'
 
@@ -57,6 +58,7 @@ const registerUser = asyncHandler(async (req, res) => {
     name,
     email,
     password,
+    city,
   })
 
   if (user) {
@@ -65,6 +67,7 @@ const registerUser = asyncHandler(async (req, res) => {
       img: user.img,
       name: user.name,
       email: user.email,
+      city: user.city,
       category: user.category,
       userType: user.userType,
       personality: user.personality,
@@ -276,6 +279,22 @@ const updateUser = asyncHandler(async (req, res) => {
   }
 })
 
+const giveScore = asyncHandler(async (req, res) => {
+  const event = await Event.findById(req.params.id)
+
+  if (event) {
+    const users = await User.updateMany(
+      { _id: { $in: event.registeredUsers } },
+      { $inc: { score: 5 } }
+    )
+
+    res.json({ message: 'Score given successfully' })
+  } else {
+    res.status(404)
+    throw new Error('Event with the passed ID not found!')
+  }
+})
+
 export {
   authUser,
   getUserProfile,
@@ -286,4 +305,5 @@ export {
   getUserById,
   updateUser,
   completeProfile,
+  giveScore,
 }

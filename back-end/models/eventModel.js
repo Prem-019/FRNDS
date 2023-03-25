@@ -11,11 +11,19 @@ const eventSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    img: {
+      type: String,
+      required: true,
+    },
     details: {
       type: String,
       required: true,
     },
     venue: {
+      type: String,
+      required: true,
+    },
+    location: {
       type: String,
       required: true,
     },
@@ -52,6 +60,25 @@ const eventSchema = mongoose.Schema(
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user',
+      },
+    ],
+    attendedUsers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user',
+      },
+    ],
+    startTime: {
+      type: Date,
+      required: true,
+    },
+    endTime: {
+      type: Date,
+      required: true,
+    },
+    interests: [
+      {
+        type: String,
       },
     ],
   },

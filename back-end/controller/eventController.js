@@ -9,10 +9,15 @@ const createEvent = asyncHandler(async (req, res) => {
     name,
     city,
     details,
+    img,
     venue,
+    location,
     date,
     createdBy,
     registeredUsers,
+    attendedUsers,
+    startTime,
+    endTime,
     minimumScore,
     limit,
   } = req.body
@@ -28,6 +33,7 @@ const createEvent = asyncHandler(async (req, res) => {
     city,
     venue,
     details,
+    img,
     date,
     createdBy,
     registeredUsers,
@@ -95,6 +101,7 @@ const updateEvent = asyncHandler(async (req, res) => {
     event.name = req.body.name || event.name
     event.city = req.body.city || event.city
     event.venue = req.body.venue || event.venue
+    event.img = req.body.img || event.img
     event.details = req.body.details || event.details
     event.date = req.body.date || event.date
     event.createdBy = req.body.createdBy || event.createdBy
@@ -133,7 +140,10 @@ const deleteEvent = asyncHandler(async (req, res) => {
 // @Route  GET /api/events/
 // @access PRIVATE auth
 const getAllEvents = asyncHandler(async (req, res) => {
-  const events = await Event.find({}).populate('registeredUsers', 'name email')
+  const events = await Event.find({ city: req.query.city }).populate(
+    'registeredUsers',
+    'name email'
+  )
   res.json(events)
 })
 
@@ -141,7 +151,9 @@ const getAllEvents = asyncHandler(async (req, res) => {
 // @Route  GET /api/events/my
 // @access PRIVATE auth
 const getMyEvents = asyncHandler(async (req, res) => {
-  const events = await Event.find({ registeredUsers: { $in: [req.user._id] } })
+  const events = await Event.find({
+    registeredUsers: { $in: [req.user._id] },
+  }).populate('registeredUsers', 'name email')
 
   res.json(events)
 })
