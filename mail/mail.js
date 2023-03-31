@@ -34,7 +34,7 @@ const sendMail = (props) => {
 
   // setup email data with unicode symbols
   let mailOptions = {
-    from: '<peradav@gmail.com>', // sender address
+    from: '<frndzorgs@gmail.com>', // sender address
     to: `${props.to}`, // list of receivers
     subject: `${props.subject}`, // Subject line
     // text: 'Test Text', // plain text body
