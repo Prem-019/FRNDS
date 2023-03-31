@@ -24,8 +24,8 @@ const sendMail = (props) => {
     port: 587,
     secure: false, // true for 465, false for other ports
     auth: {
-      user: 'peradav@gmail.com', // generated ethereal user
-      pass: 'AseJan@23', // generated ethereal password
+      user: 'frndzorgs@gmail.com', // generated ethereal user
+      pass: 'Ase@2023', // generated ethereal password
     },
     tls: {
       rejectUnauthorized: false,
