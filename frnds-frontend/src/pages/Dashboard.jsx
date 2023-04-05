@@ -109,6 +109,7 @@ function DashboardContent() {
   const id = open ? "simple-popover" : undefined;
   let navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user") )
+  console.log(user);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -125,7 +126,8 @@ function DashboardContent() {
   console.log(currentTab)
 
   React.useEffect(() => {
-    if(!user){
+    console.log(user)
+    if(user == null){
       navigate("/signin")
     }
   }, [])
@@ -216,6 +218,8 @@ function DashboardContent() {
                   <Divider />
                   <ListItem sx={{ p: 1, pl: 2, cursor:"pointer" }} onClick={
                     () => { 
+                      localStorage.removeItem("user")
+                      localStorage.removeItem("token")
                       navigate("/signin")
                     }
                   }>

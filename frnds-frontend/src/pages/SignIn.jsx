@@ -38,8 +38,15 @@ const theme = createTheme();
 export default function SignIn() {
   let navigate = useNavigate();
   const [showPassword, setShowPassword] = React.useState(false);
+  const [userDetails, setUserDetails] = React.useState({
+    email: "",
+    password: ""
+  });
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
+  const isLetters = (str) => /^[A-Za-z ]*$/.test(str);
+  const isEmail = (str) =>
+    /^([a-zA-Z0-9._%+-]+)@([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/.test(str);
 
   const checkPassword =(p) => {
     if (p.length < 8) {
@@ -60,16 +67,37 @@ export default function SignIn() {
   return true;
 }
 
+
+  React.useEffect(() => {
+    let user = JSON.parse(localStorage.getItem("user"));
+    let path;
+    if(user){
+      if(user.isAdmin){
+        path = `/admin`;
+      }
+      else{
+        path = `/dashboard`
+      }
+      navigate(path);
+    }
+  }, [])
+
+  const handleChange = (event) => {
+    const {name, value} = event.target;
+    
+      setUserDetails({
+        ...userDetails,
+        [name]: value,
+      });
+  };
+  
+
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-
-    const user = {
-      email: data.get("email"),
-      password: data.get("password")
-    };
+    const data = userDetails;
 
     // if(checkPassword(user.password)){
+      if((isEmail(data.email))) {
     
       const config = {
       method: "post",
@@ -77,7 +105,7 @@ export default function SignIn() {
       headers: {
         "Content-Type": "application/json"
       },
-      data: JSON.stringify(user)
+      data: JSON.stringify(data)
     };
 
     axios(config)
@@ -100,12 +128,15 @@ export default function SignIn() {
         console.log(error);
         toast.error(error.response.data.message)
       });
-    // }
+    }
+    else{
+      toast.error("Please enter correct email")
+    }
   };
 
   return (
     <ThemeProvider theme={theme}>
-      <ToastContainer />
+      <ToastContainer autoClose={1000}/>
       <Container component="main" maxWidth="xs" sx={{}}>
         <CssBaseline />
         <Box
@@ -144,6 +175,9 @@ export default function SignIn() {
               name="email"
               autoComplete="email"
               autoFocus
+              type="email"
+              value={userDetails.email}
+              onChange={handleChange}
             />
             <TextField
               margin="normal"
@@ -151,6 +185,8 @@ export default function SignIn() {
               fullWidth
               name="password"
               label="Password"
+              value={userDetails.password}
+              onChange={handleChange}
               type={showPassword ? "text" : "password"}
               id="password"
               autoComplete="current-password"
@@ -179,11 +215,11 @@ export default function SignIn() {
               Sign In
             </Button>
             <Grid container>
-              <Grid item xs>
+              {/* <Grid item xs>
                 <Link href="#" variant="caption">
                   Forgot password?
                 </Link>
-              </Grid>
+              </Grid> */}
               <Grid item>
                 <Link href="/signup" variant="caption">
                   {"Don't have an account? Sign Up"}

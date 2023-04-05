@@ -25,6 +25,7 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const style = {
   position: "absolute",
@@ -105,7 +106,10 @@ const users = [
   { name: "Cindy Baker" },
   { name: "Joe Quinn" },
   { name: "Howard Tanner" },
-  { name: "Peter Parker" }
+  { name: "Remy Sharp" },
+  { name: "Cindy Baker" },
+  { name: "Joe Quinn" },
+  { name: "Howard Tanner" },
 ];
 
 const theme = createTheme();
@@ -120,6 +124,8 @@ function Events() {
   const user = JSON.parse(localStorage.getItem("user"));
   const [events, setEvents] = React.useState([]);
   const [myEvents, setMyEvents] = React.useState([]);
+
+  let navigate = useNavigate();
 
   React.useEffect(() => {
     getEvents();
@@ -151,6 +157,11 @@ function Events() {
       .catch(function (error) {
         console.log(error);
         toast.error(error.response.data.message);
+        if(error.response.data.message === "Not Authorized, Token Failed"){
+          navigate("/signin");
+          localStorage.removeItem("user")
+          localStorage.removeItem("token")
+        }
       });
   };
 
@@ -227,7 +238,7 @@ function Events() {
 
   return (
     <ThemeProvider theme={theme}>
-      <ToastContainer />
+      <ToastContainer autoClose={1000}/>
       <CssBaseline />
       <main>
         <Box
@@ -390,7 +401,7 @@ function Events() {
                               )
                             }
                           >
-                            {`Register`}
+                            {`Join`}
                           </Button>
 
                           <Typography
@@ -413,7 +424,7 @@ function Events() {
                                   } Spots left*`
                                 : `*Sold Out*`)}
                           </Typography>
-                          <ToastContainer />
+                          <ToastContainer autoClose={1000}/>
                         </CardActions>
                       </Card>
                     </Grid>
@@ -512,18 +523,15 @@ function Events() {
                           <Stack direction="row" spacing={2} p={2} pt={1}>
                             {card.registeredUsers &&
                               card.registeredUsers.length > 0 &&
-                              card.registeredUsers.map((name) => {
+                              card.registeredUsers.slice(0,4).map((name) => {
                                 return (
                                   <>
+                                  <Tooltip title = {name.name}>
                                     <Avatar
                                       alt={name.name}
                                       src="/static/images/avatar/1.jpg"
-                                      sx={{ cursor: "pointer" }}
-                                      onClick={() => {
-                                        setCurrent(name.name);
-                                        handleUserOpen();
-                                      }}
                                     />
+                                    </Tooltip>
                                     <Modal
                                       open={userOpen}
                                       onClose={handleUserClose}
@@ -598,11 +606,187 @@ function Events() {
                           >
                             Deregister
                           </Button>
-                          <ToastContainer />
+                          <ToastContainer autoClose={1000}/>
                         </CardActions>
                       </Card>
                     </Grid>
                   ))}
+                  <Grid item xs={12} sm={12} md={4}>
+                      <Card
+                        sx={{
+                          height: "100%",
+                          display: "flex",
+                          flexDirection: "column"
+                        }}
+                        raised
+                      >
+                        <CardMedia
+                          component="img"
+                          image={
+                            "https://images.unsplash.com/photo-1541014871-22a89a9281e6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=435&q=80"
+                          }
+                          alt="random"
+                          sx={{ width: "100%", height: "300px" }}
+                        />
+                        <CardContent sx={{ flexGrow: 1 }}>
+                          <Typography
+                            gutterBottom
+                            variant="h5"
+                            component="h2"
+                            mb={0}
+                            sx={{
+                              fontSize: {
+                                lg: 24,
+                                md: 20,
+                                sm: 18,
+                                xs: 15
+                              }
+                            }}
+                          >
+                            {"IPL Screening"}
+                          </Typography>
+                          <Typography
+                            mb={1}
+                            color="primary"
+                            sx={{
+                              fontSize: {
+                                lg: 14,
+                                md: 10,
+                                sm: 12,
+                                xs: 10
+                              }
+                            }}
+                          >
+                            {"Fri March 09 2023"}
+                          </Typography>
+                          <Typography
+                            mb={2}
+                            sx={{
+                              height: "200px",
+                              fontSize: {
+                                lg: 16,
+                                md: 14,
+                                sm: 14,
+                                xs: 12
+                              }
+                            }}
+                          >
+                            {"If you seek nirvana while enjoying your match, head to Xtreme Sports Bar to watch your favourite teams on the big screen."}
+                          </Typography>
+                          <Divider />
+                          <Typography
+                            mt={2}
+                            color="primary"
+                            sx={{
+                              fontSize: {
+                                lg: 16,
+                                md: 12,
+                                sm: 14,
+                                xs: 12
+                              }
+                            }}
+                          >
+                            {"480 Pelissier St, Windsor"}
+                          </Typography>
+                        </CardContent>
+                        <Divider />
+                        <Typography variant="small" px={2} pt={2}>
+                          Registered Users
+                        </Typography>
+                        <CardActions>
+                          <Stack direction="row" spacing={2} p={2} pt={1}>
+                            {users &&
+                              users.length > 0 &&
+                              users.slice(0,4).map((name) => {
+                                return (
+                                  <>
+                                  <Tooltip title = {name.name}>
+                                    <Avatar
+                                      alt={name.name}
+                                      src="/static/images/avatar/1.jpg"
+                                      sx={{ cursor: "pointer" }}
+                                      onClick={() => {
+                                        setCurrent(name.name);
+                                        handleUserOpen();
+                                      }}
+                                    />
+                                    </Tooltip>
+                                    <Modal
+                                      open={userOpen}
+                                      onClose={handleUserClose}
+                                    >
+                                      <Box sx={style}>
+                                        <Stack
+                                          direction="row"
+                                          spacing={2}
+                                          mb={2}
+                                        >
+                                          <Avatar
+                                            alt={current}
+                                            src="/static/images/avatar/1.jpg"
+                                          />
+                                          <Typography
+                                            id="user-modal"
+                                            variant="h6"
+                                            component="h2"
+                                            pt={0.5}
+                                          >
+                                            {current}
+                                          </Typography>
+                                        </Stack>
+                                        <TextField
+                                          margin="normal"
+                                          required
+                                          fullWidth
+                                          id="message"
+                                          label="Type your reason here"
+                                          name="message"
+                                          autoComplete="message"
+                                          autoFocus
+                                          size="small"
+                                          variant="filled"
+                                        />
+                                        <Stack
+                                          direction="row"
+                                          spacing={2}
+                                          p={2}
+                                          mt={2}
+                                          alignItems="center"
+                                          justifyContent="center"
+                                        >
+                                            <Button
+                                              type="submit"
+                                              variant="contained"
+                                              onClick={() => {
+                                                handleUserClose();
+                                                toast.success("User Reported");
+                                              }}
+                                            >
+                                              Report User
+                                            </Button>
+                                        </Stack>
+                                      </Box>
+                                    </Modal>
+                                  </>
+                                );
+                              })}
+                            {/* <Typography variant="body2"> + 49 more</Typography> */}
+                          </Stack>
+                        </CardActions>
+                        <CardActions>
+                          <Button
+                            size="medium"
+                            variant="contained"
+                            color="secondary"
+                            sx={{ ml: 1, mb: 2 }}
+                            disabled
+                          >
+                            Event Completed
+                          </Button>
+                          <ToastContainer autoClose={1000}/>
+                        </CardActions>
+                      </Card>
+                    </Grid>
                 </Grid>
               </Container>
             </TabPanel>

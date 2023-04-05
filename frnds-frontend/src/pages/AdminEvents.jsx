@@ -20,7 +20,8 @@ import {
   ListItemButton,
   IconButton,
   Checkbox,
-  Tooltip
+  Tooltip,
+  MenuItem
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Container from "@mui/material/Container";
@@ -30,6 +31,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const eventModalStyle = {
   position: "absolute",
@@ -163,28 +165,54 @@ function AdminEvents() {
   const handleUserOpen = () => setUserOpen(true);
   const handleUserClose = () => setUserOpen(false);
   const [currentUsers, setCurrentUsers] = React.useState([]);
+  const [currentEvent, setCurrentEvent] = React.useState([]);
   const token = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user"));
   const [events, setEvents] = React.useState([]);
-  const [checked, setChecked] = React.useState([1]);
-  // const users = [
-  //   { name: "Remy Sharp" },
-  //   { name: "Cindy Baker" },
-  //   { name: "Joe Quinn" },
-  //   { name: "Howard Tanner" },
-  //   { name: "Peter Parker" }
-  // ];
+  const [attendees, setAttendees] = React.useState([]);
+  const [eventDetails, setEventDetails] = React.useState({
+    name: "",
+    city: "",
+    details: "",
+    venue: "",
+    date: " ",
+    createdBy: "",
+    registeredUsers: [],
+    minimumScore: 0,
+    emotion: 0,
+    anxiety: 0,
+    personality: "",
+    startTime: " ",
+    endTime: " ",
+    score: 0,
+    limit: 30
+  });
+
+  const navigate = useNavigate()
+
+  const convertDate = (date) => {
+    const dateString = new Date(date);
+    const isoDate = dateString.toISOString(); // "2023-03-09T15:30:00.000Z"
+    const isoDateWithMilliseconds = isoDate.slice(0, -1) + "28Z";
+    return isoDateWithMilliseconds; // "2023-03-09T15:30:00.028Z"
+  };
+
+  const handleChange = (event) => {
+    let { name, value } = event.target;
+    setEventDetails({ ...eventDetails, [name]: value });
+  };
 
   const handleToggle = (value) => () => {
-    const currentIndex = checked.indexOf(value);
-    const newChecked = [...checked];
+    const currentIndex = attendees.indexOf(value);
+    const newChecked = [...attendees];
 
     if (currentIndex === -1) {
       newChecked.push(value);
     } else {
       newChecked.splice(currentIndex, 1);
     }
-
-    setChecked(newChecked);
+    console.log(newChecked);
+    setAttendees(newChecked);
   };
 
   React.useEffect(() => {
@@ -216,42 +244,114 @@ function AdminEvents() {
       .catch(function (error) {
         console.log(error);
         toast.error(error.response.data.message);
+        if(error.response.data.message === "Not Authorized, Token Failed"){
+          navigate("/signin");
+          localStorage.removeItem("user")
+          localStorage.removeItem("token")
+        }
       });
   };
 
-
   const createEvent = () => {
-    let score = Math.floor(Math.random() * (500 - 1 + 1)) + 1;
-    if (score > 300) {
-      toast.success("Event created");
-    } else {
-      toast.error("Not enough score to create event");
-    }
+    let data = eventDetails;
+    data.date = convertDate(eventDetails.date);
+    data["startTime"] = convertDate(eventDetails["startTime"]);
+    data["endTime"] = convertDate(eventDetails["endTime"]);
+    data["createdBy"] = user._id;
+    console.log(data);
+    let config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: "https://frnds-server.onrender.com/api/events/create",
+      headers: {
+        Authorization: "Bearer " + token,
+        "Content-Type": "application/json"
+      },
+      data: data
+    };
+
+    axios
+      .request(config)
+      .then((response) => {
+        console.log(JSON.stringify(response.data));
+        toast.success("Event Created Successfully");
+      })
+      .catch((error) => {
+        console.log(error);
+        toast.error(error);
+      });
   };
 
   const deleteEvent = (eventId) => {
     var config = {
-      method: 'delete',
-    maxBodyLength: Infinity,
+      method: "delete",
+      maxBodyLength: Infinity,
       url: `https://frnds-server.onrender.com/api/events/${eventId}`,
-      headers: { 
-        'Authorization': 'Bearer ' +  token
+      headers: {
+        Authorization: "Bearer " + token
       }
     };
-    
+
     axios(config)
-    .then(function (response) {
-      console.log(JSON.stringify(response.data));
-      toast.success("Event Deleted")
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
-  }
+      .then(function (response) {
+        console.log(JSON.stringify(response.data));
+        toast.success("Event Deleted");
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
+
+  const updateAttendees = (details) => {
+    let data = { ...details, attendedUsers: attendees };
+    console.log(data)
+    let config = {
+      method: "put",
+      maxBodyLength: Infinity,
+      url: `https://frnds-server.onrender.com/api/events/${details._id}`,
+      headers: {
+        Authorization: "Bearer " + token,
+        "Content-Type": "application/json"
+      },
+      data: data
+    };
+
+    axios
+      .request(config)
+      .then((response) => {
+        console.log(JSON.stringify(response.data));
+        // updateScore(id)
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const updateScore = (id) => {
+    let config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: `https://frnds-server.onrender.com/api/users/score/${id}`,
+      headers: {
+        Authorization: "Bearer " + token
+      }
+    };
+
+    axios
+      .request(config)
+      .then((response) => {
+        console.log(JSON.stringify(response.data));
+        toast.success("Updated users score successfully!");
+      })
+      .catch((error) => {
+        console.log(error);
+        toast.error("Error updating users score");
+      });
+  };
 
   return (
     <ThemeProvider theme={theme}>
-      <ToastContainer />
+      <ToastContainer autoClose={1000}/>
       <CssBaseline />
       <Box
         sx={{
@@ -277,27 +377,49 @@ function AdminEvents() {
                   margin="normal"
                   required
                   fullWidth
-                  id="title"
-                  label="Event Title"
-                  name="title"
-                  autoComplete="title"
+                  id="name"
+                  label="Event Name"
+                  name="name"
+                  autoComplete="name"
                   autoFocus
                   size="small"
                   variant="filled"
+                  value={eventDetails.name}
+                  onChange={handleChange}
                 />
               </Grid>
-              <Grid item md={6} xs={12}>
+              <Grid item xs={12}>
                 <TextField
                   margin="normal"
                   required
                   fullWidth
-                  id="location"
-                  label="Location"
-                  name="location"
-                  autoComplete="location"
+                  id="details"
+                  label="Event Details"
+                  name="details"
+                  autoComplete="details"
                   autoFocus
                   size="small"
                   variant="filled"
+                  value={eventDetails.details}
+                  maxRows={5}
+                  multiline
+                  onChange={handleChange}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="img"
+                  label="Event Image"
+                  name="img"
+                  autoComplete="img"
+                  autoFocus
+                  size="small"
+                  variant="filled"
+                  value={eventDetails.img}
+                  onChange={handleChange}
                 />
               </Grid>
               <Grid item md={6} xs={12}>
@@ -312,6 +434,24 @@ function AdminEvents() {
                   autoFocus
                   size="small"
                   variant="filled"
+                  value={eventDetails.venue}
+                  onChange={handleChange}
+                />
+              </Grid>
+              <Grid item md={6} xs={12}>
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="city"
+                  label="City"
+                  name="city"
+                  autoComplete="city"
+                  autoFocus
+                  size="small"
+                  variant="filled"
+                  value={eventDetails.city}
+                  onChange={handleChange}
                 />
               </Grid>
               <Grid item md={6} xs={12}>
@@ -327,22 +467,9 @@ function AdminEvents() {
                   size="small"
                   variant="filled"
                   shrink
-                  type = "date"
-                />
-              </Grid>
-              <Grid item md={6} xs={12}>
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  id="time"
-                  label="Time"
-                  name="time"
-                  autoComplete="time"
-                  autoFocus
-                  size="small"
-                  variant="filled"
-                  type="time"
+                  type="datetime-local"
+                  value={eventDetails.date}
+                  onChange={handleChange}
                 />
               </Grid>
               <Grid item md={6} xs={12}>
@@ -357,7 +484,14 @@ function AdminEvents() {
                   autoFocus
                   size="small"
                   variant="filled"
-                />
+                  value={eventDetails.personality}
+                  onChange={handleChange}
+                  select
+                >
+                  <MenuItem value={"Introvert"}>Introvert</MenuItem>
+                  <MenuItem value={"Extrovert"}>Extrovert</MenuItem>
+                  <MenuItem value={"Ambivert"}>Ambivert</MenuItem>
+                </TextField>
               </Grid>
               <Grid item md={6} xs={12}>
                 <TextField
@@ -372,6 +506,8 @@ function AdminEvents() {
                   size="small"
                   variant="filled"
                   type="number"
+                  value={eventDetails.anxiety}
+                  onChange={handleChange}
                 />
               </Grid>
               <Grid item md={6} xs={12}>
@@ -379,14 +515,16 @@ function AdminEvents() {
                   margin="normal"
                   required
                   fullWidth
-                  id="emotional"
+                  id="emotion"
                   label="Min. Emotional Score"
-                  name="emotional"
-                  autoComplete="emotional"
+                  name="emotion"
+                  autoComplete="emotion"
                   autoFocus
                   size="small"
                   variant="filled"
                   type="number"
+                  value={eventDetails.emotion}
+                  onChange={handleChange}
                 />
               </Grid>
               <Grid item md={6} xs={12}>
@@ -402,6 +540,8 @@ function AdminEvents() {
                   size="small"
                   variant="filled"
                   type="number"
+                  value={eventDetails.score}
+                  onChange={handleChange}
                 />
               </Grid>
               <Grid item md={6} xs={12}>
@@ -409,13 +549,15 @@ function AdminEvents() {
                   margin="normal"
                   required
                   fullWidth
-                  id="interests"
-                  label="Interests"
-                  name="interests"
-                  autoComplete="interests"
+                  id="limit"
+                  label="Limit"
+                  name="limit"
+                  autoComplete="limit"
                   autoFocus
                   size="small"
                   variant="filled"
+                  value={eventDetails.limit}
+                  onChange={handleChange}
                 />
               </Grid>
               <Grid item md={6} xs={12}>
@@ -423,28 +565,16 @@ function AdminEvents() {
                   margin="normal"
                   required
                   fullWidth
-                  id="capacity"
-                  label="Capacity"
-                  name="capacity"
-                  autoComplete="capacity"
-                  autoFocus
-                  size="small"
-                  variant="filled"
-                />
-              </Grid>
-              <Grid item md={6} xs={12}>
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  id="start-time"
+                  id="startTime"
                   label="Booking Start Time"
-                  name="start-time"
-                  autoComplete="start-time"
+                  name="startTime"
+                  autoComplete="startTime"
                   autoFocus
                   size="small"
                   variant="filled"
-                  type="time"
+                  type="datetime-local"
+                  value={eventDetails.startTime}
+                  onChange={handleChange}
                 />
               </Grid>
               <Grid item md={6} xs={12}>
@@ -452,14 +582,16 @@ function AdminEvents() {
                   margin="normal"
                   required
                   fullWidth
-                  id="end-time"
+                  id="endTime"
                   label="Booking End Time"
-                  name="end-time"
-                  autoComplete="end-time"
+                  name="endTime"
+                  autoComplete="endTime"
                   autoFocus
                   size="small"
                   variant="filled"
-                  type="time"
+                  type="datetime-local"
+                  value={eventDetails.endTime}
+                  onChange={handleChange}
                 />
               </Grid>
             </Grid>
@@ -468,7 +600,10 @@ function AdminEvents() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
-              onClick={createEvent}
+              onClick={() => {
+                createEvent()
+                handleClose()
+              }}
             >
               Create
             </Button>
@@ -489,137 +624,191 @@ function AdminEvents() {
         <Container sx={{ p: 4 }} maxWidth="lg">
           {/* End hero unit */}
           <Grid container spacing={4}>
-            {events.map((card) => (
-              <Grid item key={card} xs={12} sm={12} md={4}>
-                <Card
-                  sx={{
-                    height: "100%",
-                    display: "flex",
-                    flexDirection: "column"
-                  }}
-                >
-                  <CardMedia
-                    component="img"
-                    image={
-                      card.img ||
-                      "https://images.unsplash.com/photo-1541014871-22a89a9281e6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=435&q=80"
-                    }
-                    alt="random"
-                    sx={{ width: "100%", height: "300px" }}
-                  />
-                  <CardContent sx={{ flexGrow: 1 }}>
-                    <Typography gutterBottom variant="h5" component="h2">
-                      {card.name}
-                    </Typography>
-                    <Typography mb={2} sx={{ height: "200px" }}>
-                      {card.details}
-                    </Typography>
-                    <Divider />
-                    <Typography mt={2} color="primary">
-                      {card.venue + ", " + card.city}
-                    </Typography>
-                  </CardContent>
-                  <CardActions
+            {events.map((card, key) => {
+              return (
+                <Grid item key={card} xs={12} sm={12} md={4}>
+                  <Card
                     sx={{
+                      height: "100%",
                       display: "flex",
-                      flexDirection: "row",
-                      justifyContent: "space-between"
+                      flexDirection: "column"
                     }}
                   >
-                    <Button
-                      size="medium"
-                      variant="contained"
-                      color="secondary"
-                      sx={{ ml: 1, mb: 2 }}
-                      onClick={() => {
-                        setCurrentUsers(card.registeredUsers);
-                        handleUserOpen();
+                    <CardMedia
+                      component="img"
+                      image={
+                        card.img ||
+                        "https://images.unsplash.com/photo-1541014871-22a89a9281e6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=435&q=80"
+                      }
+                      alt="random"
+                      sx={{ width: "100%", height: "300px" }}
+                    />
+                    <CardContent sx={{ flexGrow: 1 }}>
+                      <Typography
+                        gutterBottom
+                        variant="h5"
+                        component="h2"
+                        sx={{
+                          fontSize: {
+                            lg: 24,
+                            md: 20,
+                            sm: 18,
+                            xs: 15
+                          }
+                        }}
+                      >
+                        {card.name}
+                      </Typography>
+                      <Typography
+                        mb={2}
+                        sx={{
+                          height: "200px",
+                          fontSize: {
+                            lg: 15,
+                            md: 14,
+                            sm: 14,
+                            xs: 12
+                          }
+                        }}
+                      >
+                        {card.details}
+                      </Typography>
+                      <Divider />
+                      <Typography
+                        mt={2}
+                        color="primary"
+                        sx={{
+                          fontSize: {
+                            lg: 16,
+                            md: 12,
+                            sm: 14,
+                            xs: 12
+                          }
+                        }}
+                      >
+                        {card.venue + ", " + card.city}
+                      </Typography>
+                    </CardContent>
+                    <CardActions
+                      sx={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "space-between"
                       }}
-                      disabled={card.registeredUsers.length > 0 ? false : true}
                     >
-                      View participants
-                    </Button>
-                    <Modal open={userOpen} onClose={handleUserClose}>
-                      <Box sx={partipantsModalStyle}>
-                        <Typography
-                          id="view-participants-modal"
-                          variant="h6"
-                          component="h2"
-                        >
-                          Select Attendees
-                        </Typography>
-                        <List
-                          dense
-                          sx={{
-                            width: "100%",
-                            maxWidth: 360,
-                            bgcolor: "background.paper"
-                          }}
-                        >
-                          {currentUsers.map((user, value) => {
-                            const labelId = `checkbox-list-secondary-label-${value}`;
-                            console.log(user.name);
-                            return (
-                              <ListItem
-                                key={value}
-                                secondaryAction={
-                                  <Checkbox
-                                    edge="end"
-                                    onChange={handleToggle(value)}
-                                    checked={checked.indexOf(value) !== -1}
-                                    inputProps={{ "aria-labelledby": labelId }}
-                                  />
-                                }
-                                disablePadding
-                              >
-                                <ListItemButton>
-                                  <ListItemAvatar>
-                                    <Avatar
-                                      alt={user.name}
-                                      src={`/static/images/avatar/${
-                                        value + 1
-                                      }.jpg`}
+                      <Button
+                        size="medium"
+                        variant="contained"
+                        color="secondary"
+                        sx={{
+                          ml: 1,
+                          mb: 2,
+                          fontSize: {
+                            lg: 15,
+                            md: 10,
+                            sm: 14,
+                            xs: 12
+                          }
+                        }}
+                        onClick={() => {
+                          setCurrentUsers(card.registeredUsers);
+                          setAttendees([]);
+                          handleUserOpen();
+                        }}
+                        disabled={
+                          card.registeredUsers.length > 0 ? false : true
+                        }
+                      >
+                        View participants
+                      </Button>
+                      <Modal open={userOpen} onClose={handleUserClose}>
+                        <Box sx={partipantsModalStyle}>
+                          <Typography
+                            id="view-participants-modal"
+                            variant="h6"
+                            component="h2"
+                          >
+                            Select Attendees
+                          </Typography>
+                          <List
+                            dense
+                            sx={{
+                              width: "100%",
+                              maxWidth: 360,
+                              bgcolor: "background.paper"
+                            }}
+                          >
+                            {currentUsers.map((user, value) => {
+                              const labelId = `checkbox-${value}`;
+                              return (
+                                <ListItem
+                                  key={value}
+                                  secondaryAction={
+                                    <Checkbox
+                                      edge="end"
+                                      onChange={handleToggle(user.name)}
+                                      checked={
+                                        attendees.indexOf(user.name) !== -1
+                                      }
+                                      inputProps={{
+                                        "aria-labelledby": labelId
+                                      }}
                                     />
-                                  </ListItemAvatar>
-                                  <ListItemText
-                                    id={labelId}
-                                    primary={user.name}
-                                  />
-                                </ListItemButton>
-                              </ListItem>
-                            );
-                          })}
-                        </List>
-                        <Button
-                          type="submit"
-                          fullWidth
-                          variant="contained"
-                          sx={{ mt: 3, mb: 2 }}
-                          // onClick={createEvent}
-                          onClick={() => {
-                            handleUserClose();
-                            toast.success("Updated users score successfully!");
-                          }}
+                                  }
+                                  disablePadding
+                                >
+                                  <ListItemButton>
+                                    <ListItemAvatar>
+                                      <Avatar
+                                        alt={user.name}
+                                        src={`/static/images/avatar/${
+                                          value + 1
+                                        }.jpg`}
+                                      />
+                                    </ListItemAvatar>
+                                    <ListItemText
+                                      id={labelId}
+                                      primary={user.name}
+                                    />
+                                  </ListItemButton>
+                                </ListItem>
+                              );
+                            })}
+                          </List>
+                          <Button
+                            type="submit"
+                            fullWidth
+                            variant="contained"
+                            sx={{ mt: 3, mb: 2 }}
+                            // onClick={createEvent}
+                            onClick={() => {
+                              handleUserClose();
+                              // console.log(events[key])
+                              // setCurrentEvent(card)
+                              // updateAttendees(currentEvent);
+                              toast.success("Updated users score")
+                            }}
+                          >
+                            Save
+                          </Button>
+                        </Box>
+                      </Modal>
+                      <ToastContainer autoClose={1000}/>
+                      <Tooltip title="Delete Event">
+                        <IconButton
+                          aria-label="delete"
+                          color="error"
+                          sx={{ ml: 1, mb: 2 }}
+                          onClick={() => deleteEvent(card._id)}
                         >
-                          Save
-                        </Button>
-                      </Box>
-                    </Modal>
-                    <ToastContainer />
-                    <Tooltip title="Delete Event">
-                    <IconButton
-                      aria-label="delete"
-                      color="error"
-                      sx={{ ml: 1, mb: 2 }}
-                      onClick={()=>deleteEvent(card._id)}
-                    >
-                      <DeleteIcon size="large"/>
-                    </IconButton>
-                    </Tooltip>
-                  </CardActions>
-                </Card>
-              </Grid>
-            ))}
+                          <DeleteIcon size="large" />
+                        </IconButton>
+                      </Tooltip>
+                    </CardActions>
+                  </Card>
+                </Grid>
+              );
+            })}
           </Grid>
         </Container>
       </Box>

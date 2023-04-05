@@ -54,6 +54,8 @@ export const MainListItems = () => {
       </ListItemButton>
       <ListItemButton name="logout" onClick={() => {
         navigate("/signin")
+        localStorage.removeItem("token")
+        localStorage.removeItem("user")
       }}>
         <ListItemIcon>
           <LogoutIcon />
@@ -86,6 +88,8 @@ export const SecondaryListItems = () => {
       </ListItemButton>
       <ListItemButton name="logout" onClick={() => {
         navigate("/signin")
+        localStorage.removeItem("user")
+        localStorage.removeItem("token")
       }}>
         <ListItemIcon>
           <LogoutIcon />

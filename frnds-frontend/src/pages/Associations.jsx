@@ -79,7 +79,7 @@ const associations = [
 function Associations() {
   return (
     <ThemeProvider theme={theme}>
-      <ToastContainer />
+      <ToastContainer autoClose={1000}/>
       <CssBaseline />
       <Box
         sx={{
@@ -141,7 +141,7 @@ function Associations() {
                   >
                     View more
                   </Button>
-                  <ToastContainer />
+                  <ToastContainer autoClose={1000}/>
                 </CardActions>
               </Card>
             </Grid>

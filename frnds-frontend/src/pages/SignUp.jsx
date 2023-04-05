@@ -39,8 +39,16 @@ const theme = createTheme();
 export default function SignUp() {
   let navigate = useNavigate();
   const [showPassword, setShowPassword] = React.useState(false);
+  const [userDetails, setUserDetails] = React.useState({
+    name: "",
+    email: "",
+    password: ""
+  });
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
+  const isLetters = (str) => /^[A-Za-z ]*$/.test(str);
+  const isEmail = (str) =>
+    /^([a-zA-Z0-9._%+-]+)@([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/.test(str);
 
   const checkPassword = (p) => {
     if (p.length < 8) {
@@ -55,30 +63,50 @@ export default function SignUp() {
       toast.error("Your password must contain at least one digit.");
       return false;
     }
-    // if (errors.length > 0) {
-    //     alert(errors.join("\n"));
-    //     return false;
-    // }
     return true;
+  };
+
+  React.useEffect(() => {
+    let user = JSON.parse(localStorage.getItem("user"));
+    console.log(user)
+    let path;
+    if (user) {
+      if (user.isAdmin) {
+        path = `/admin`;
+      } else {
+        path = `/dashboard`;
+      }
+      navigate(path);
+    }
+  }, []);
+
+  const handleChange = (event) => {
+    const {name, value} = event.target;
+      setUserDetails({
+        ...userDetails,
+        [name]: value,
+      });
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const user = {
-      name: data.get("name"),
-      email: data.get("email"),
-      password: data.get("password")
-    };
-
-    if (checkPassword(user.password)) {
+    const data = userDetails;
+    if(!isEmail(data.email)){
+      toast.error("Please enter correct email")
+      return
+    }
+    if(!isLetters(data.name)){
+      toast.error("Please enter proper name. Do not include numbers or special characters")
+      return
+    }
+    if (checkPassword(data.password)) {
       const config = {
         method: "post",
         url: `https://frnds-server.onrender.com/api/users/register`,
         headers: {
           "Content-Type": "application/json"
         },
-        data: JSON.stringify(user)
+        data: JSON.stringify(data)
       };
 
       axios(config)
@@ -102,7 +130,7 @@ export default function SignUp() {
 
   return (
     <ThemeProvider theme={theme}>
-      <ToastContainer />
+      <ToastContainer autoClose={1000}/>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box
@@ -141,6 +169,8 @@ export default function SignUp() {
                   label="Name"
                   name="name"
                   autoComplete="name"
+                  value={userDetails.name}
+                  onChange={handleChange}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -151,6 +181,9 @@ export default function SignUp() {
                   label="Email Address"
                   name="email"
                   autoComplete="email"
+                  type="email"
+                  value={userDetails.email}
+                  onChange={handleChange}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -165,6 +198,8 @@ export default function SignUp() {
                     label="Password"
                     type={showPassword ? "text" : "password"}
                     id="password"
+                    value={userDetails.password}
+                  onChange={handleChange}
                     autoComplete="new-password"
                     InputProps={{
                       endAdornment: (

@@ -13,8 +13,8 @@ import {
     avatar: '/static/images/avatars/avatar_6.png',
     city: '',
     country: '',
-    name: 'Janette Doe',
-    email:"jane@email.com"
+    name: '',
+    email:""
   };
   
   export const AccountProfile = (props) => (

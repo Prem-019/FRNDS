@@ -107,7 +107,7 @@ function AdminContent() {
   const avatarOpen = Boolean(anchorEl);
   const id = open ? "simple-popover" : undefined;
   let navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem("user") )?? {name:"Jane Doe"}
+  const user = JSON.parse(localStorage.getItem("user") )
   const  currentTab = localStorage.getItem('currentTab') ?? "Account";
   console.log(currentTab);
 
@@ -125,11 +125,15 @@ function AdminContent() {
 
   React.useEffect(() => {
    
-    const user = JSON.parse(localStorage.getItem('user'))
-    if(!user.isAdmin){
+    console.log(user);
+    if(user == null){
+      navigate("/signin")
+    }
+    else if(!user.isAdmin){
         let path = `/dashboard`
         navigate(path);
     }
+    
   }, [])
   
 
@@ -222,6 +226,8 @@ function AdminContent() {
                   <ListItem sx={{ p: 1, pl: 2, cursor:"pointer" }} onClick={
                     () => { 
                       navigate("/signin")
+                      localStorage.removeItem("user")
+        localStorage.removeItem("token")
                     }
                   }>
                     <ListItemIcon>
@@ -278,7 +284,7 @@ function AdminContent() {
                     height: "100%",
                   }}
                 >
-                  {(currentTab === "Events" || currentTab === "Événements") && <Events/>}
+                  {(currentTab === "Events" || currentTab === "Événements") && <AdminEvents/>}
                   {(currentTab === "My Profile" || currentTab === "Mon profil") && <Profile/>}
                 </Paper>
               </Grid>

@@ -188,7 +188,7 @@ export const AccountPreferences = (props) => {
 
   return (
     <form autoComplete="off" noValidate {...props}>
-      <ToastContainer/>
+      <ToastContainer autoClose={1000}/>
       <Card>
         <CardHeader
           subheader="The information will be used to match friends and events"

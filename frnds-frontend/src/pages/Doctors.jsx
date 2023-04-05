@@ -91,7 +91,7 @@ const doctors = [
 function Doctors() {
   return (
     <ThemeProvider theme={theme}>
-      <ToastContainer />
+      <ToastContainer autoClose={1000}/>
       <CssBaseline />
       <Box
         sx={{
@@ -150,7 +150,7 @@ function Doctors() {
                     >
                       Book Appointment
                     </Button>
-                    <ToastContainer />
+                    <ToastContainer autoClose={1000}/>
                   </CardActions>
                 </Box>
                 <CardMedia
